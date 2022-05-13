@@ -1,0 +1,16 @@
+<?php
+
+	include "./mobile_check.php";
+
+	$obj = new module(); 
+
+
+	if($obj -> mobileConcertCheck() == "mobile") {
+		header("Location: /m_en/index.html");
+		die();
+
+	} else {
+		header("Location: /m_en/index.html");
+		die();
+	} 
+?>

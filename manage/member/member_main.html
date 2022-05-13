@@ -1,0 +1,76 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+ 	<meta charset="UTF-8">
+ 	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+ 	<link rel="stylesheet" href="/css/common.css">
+ 	<link rel="stylesheet" href="/css/layout.css">
+ 	<link rel="stylesheet" href="/css/style.css">
+ 	<style type="text/css">
+ 		#header_zone{width: 100%; height: 40px; background-color: #EAEAEA; line-height: 40px; font-weight: bold; } 
+ 		.menu{display: inline-block; cursor: pointer; padding: 0px 10px;}
+ 		.menu_left{width: 100%; height: 24px; display: block; cursor: pointer; padding: 5px 10px;line-height: 24px; }
+ 		#wrap{width: 100%; height: 100%; vertical-align: top;}
+ 		#menu_wrap{ width: 200px; height: 100% ; display: inline-block; padding: 10px; background-color: #DADADA; vertical-align: top;}
+ 		#menu_left_wrap{width: 100%;height: auto; margin-top: 20px;}
+
+ 		#menu_title{width: 100%;height: 40px; line-height: 40px; padding: 10px 0px; margin-top: 5px; text-align: center; font-size: 28px;font-weight: bold; border-bottom: 1px solid #000;}
+		#menu_left_title{width: 100%;height: auto;font-size: 18px; font-weight: bold; text-align: center;}
+
+
+ 		#content_wrap{width: calc( 100%-200px); height: auto; left: 210px; display: inline-block; } 
+ 
+.cells{width: auto; height: auto;  padding:  2px 10px;  display: inline-block; } 
+
+.w100{width: 100px;}
+.w150{width: 150px;}
+.w400{width: 400px;}
+ 	</style> 
+ 	<script src="/js/jquery-3.3.1.min.js"></script>
+ 	<script src="/js/script.js"></script>
+ 	<title>mallplus</title>
+ 	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+ 	<script type="text/javascript">
+ 		$(document).ready(function()
+ 		{ 
+ 			$("#header_zone").load("../common/menu_top.html"); 
+ 			$("#menu_left").load("member_menu.html"); 
+
+			let state = $("#state").val();
+			let getPage = "";
+ 
+			switch(state) {
+
+				case "l":	getPage="member_list.html"; 	break; 
+				case "w":	getPage="member_wallet_list.html";  	break; 
+				case "v":	getPage="member_view.html";  	break; 
+				case "m":	getPage="member_modify.html";  	break; 
+				case "r":	getPage="member_write.html";  	break; 
+
+				default: getPage="member_list.html";   break;
+			} 
+ 			
+ 			$("#content_wrap").load(getPage); 
+
+		});//doc 
+	</script>
+
+</head>
+<body> 
+	<div id="header_zone"> </div>
+
+	<div id="wrap"> 
+		<div id="menu_wrap">
+			<div id="menu_title" style=" "> MANAGER </div> 
+			<div id="menu_left_wrap" style="">
+				<div id="menu_left_title" style=""> </div>
+				<div id="menu_left" style="width: 100%;height: auto;margin-top: 20px;"> </div>
+			</div> 
+		</div>
+		<div id="content_wrap" style="width: 80%; height: auto; margin-left: 30px;">	</div>
+	</div>
+
+	<input type="hidden" id="state" value="<?=$_GET['state'];?>">
+</body>
+
+</html>

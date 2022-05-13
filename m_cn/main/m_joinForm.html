@@ -1,0 +1,171 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function () {
+
+			$('#btn-home').on('click', function () {
+				$(location).attr('href', "/m_cn/main/index.html");
+			});
+
+			$("#btn_join").on('click', function (e) {
+				e.preventDefault();
+
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+				let passwd_comp = $('#passwd_comp').val();
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val();
+				let userNation = $("#userNation option:selected").val();
+
+				if (!userID) { alert("請輸入您的身份證. "); $('#userID').focus(); return false; }
+				else if (!userPassword) { alert("請輸入密碼. "); $('#userPassword').focus(); return false; }
+				else if (!passwd_comp) { alert("請輸入密碼確認. "); $('#passwd_comp').focus(); return false; }
+				else if (userPassword != passwd_comp) { alert("密碼和密碼確認不同，請輸入. "); $('#passwd_comp').val(""); $('#passwd_comp').focus(); return false; }
+				else if (!userName) { alert("請輸入您的全名. "); $('#userName').focus(); return false; }
+				else if (!userEMAIL) { alert("請輸入電子郵件. "); $('#userEMAIL').focus(); return false; }
+				else {
+
+					let data = $("#joinForm").serialize();
+					let retValue = recMember(data);
+
+					if (retValue > 0) {
+						alert("您已註冊為會員");
+						$(location).attr('href', "/m_cn/main/index.html");
+
+					}
+					else
+						alert("會員註冊失敗" + e);
+				}
+
+				//else if (!userPhone) { alert("연락를 입력해 주세요. "); $('#userPhone').focus(); return false; }
+				//else if (!userNation) { alert("국가를 입력해 주세요. "); $('#userNation').focus(); return false; }
+
+			});// btn_join s
+
+			function recMember(params) {
+
+				let jURL = "/m_cn/module/set_member_rec.php";
+				let data = 0;
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				console.log("login -->", returnValue)
+
+				data = parseInt(returnValue);
+
+				return data;
+
+
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">報名</h1>
+			<button type="button" id="btn-home" class="btn-home"
+				style="font-size: 18px;font-weight: bold; line-height: 30px; color: #FFF;text-align: center; margin-top: 10px; margin-left: 20px;">
+				< </button>
+					<button type="button" class="btn-notice">
+						<span class="blind">注意</span>
+						<span class="btn-notice__count">9</span>
+					</button>
+					<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+
+			<form name="joinForm" id="joinForm" method="post">
+				<input type="hidden" id="chkID_state" name="chkID_state" />
+
+				<div id="" class="inp-txt full"
+					style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin: 20px 0px;">
+					會員註冊信息 <br />
+					輸入 5 個或更多字符作為 ID<br />
+					密碼請輸入至少 5 個英文數字和特殊字符
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userID" name="userID" class="inp-txt full" placeholder="ID（5 個字符或更多）">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="password" id="userPassword" name="userPassword" class="inp-txt full"
+						placeholder="密碼">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="password" id="passwd_comp" name="passwd_comp" class="inp-txt full"
+						placeholder="驗證密碼">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="text" id="userName" name="userName" class="inp-txt full" placeholder="陳述">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userPhone" name="userPhone" class="inp-txt full" placeholder="電話號碼">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userEMAIL" name="userEMAIL" class="inp-txt full" placeholder="電子郵件">
+				</div>
+
+
+				<div class="inp-wrap">
+					<select id="userNation" name="userNation" class="inp-txt full">
+						<option>::: 國家選擇 :::</option>
+						<option value="kr">韓國</option>
+						<option value="pp">USA</option>
+						<option value="Cn">中國</option>
+						<option value="jp">日本</option>
+						<option value="vn">越南</option>
+
+					</select>
+
+				</div>
+
+				<div class="btn-wrap" style="margin-top: 30px;">
+					<button type="button" id="btn_join" class="btn-confirm"> 加 入 </button>
+				</div>
+
+			</form>
+
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+
+</html>

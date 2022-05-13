@@ -1,0 +1,154 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$('#btn-home').on('click', function () {
+				$(location).attr('href',"/m/main/index.html");
+			});
+
+
+			$( "#btn_find" ).on('click', function ()  
+			{
+				e.preventDefault();
+
+
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val(); 
+				let userNation = $("#userNation option:selected").val(); 
+
+
+				if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;} 
+				if(!userPhone){alert("핸드폰 번호를 입력해 주세요. "); $('#userPhone').focus(); return false;} 
+				if(!userEMAIL){alert("userEMAIL을 입력해 주세요. "); $('#userEMAIL').focus(); return false;} 
+				if(!userNation){alert("국가를 를 입력해 주세요. "); $('#userNation').focus(); return false;} 
+
+
+
+
+				var url = $(this).attr( "action" );
+				var data = $(this).serialize();
+
+				let  chk_pw_state = chk_password(data);
+				let  chk_pw_auth = "";
+
+				if(chk_pw_state)
+				{  
+					chk_pw_auth = genAuthNumber(userEMAIL);
+				}else{
+
+					alert("등록된 정보를 찾을 수 없습니다.\n입력하신 내용을 확인하여 주십시요.")
+					return false;
+				}
+
+	  		});// btn_join
+
+
+			$( "#btn_action_Auth" ).on('click', function ()  
+			{
+				e.preventDefault();
+
+
+				let authMuber = $('#authMuber').val(); 
+				let ar = $('#ar').val(); 
+
+				if(!authMuber){alert("인증번호를  입력해 주세요. "); $('#authMuber').focus(); return false;} 
+				else if( authMuber != ar){alert("이메일로 보내드린 인증번호와 입력하신 인증번호가 다릅니다.\n확인하여 주세요. "); $('#authMuber').focus(); return false;} 
+				else{
+					 
+					$(location).attr('href',"newPasswd.html");
+				}
+
+			});// btn_action_Auth
+
+		});
+	</script> 
+</head>
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">비밀번호 찾기</h1>
+			<button type="button" id="btn-home" class="btn-home" style="font-size: 18px;font-weight: bold; line-height: 30px; color: #FFF;text-align: center; margin-top: 10px; margin-left: 20px;">
+				<
+			</button>
+			<button type="button" id="btn_nation" class="btn-notice">
+				<span class="blind">choice Nation</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+			<div id=""  class="inp-txt full"  style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin: 20px 0px;" >  
+				비밀번호 찾기 안내 <br/>
+				등록된 아이디와 헨드폰 번호와 이메일을 입력하시고 <br/>
+				등록된 국가를 선택해 주세요 <br/>
+				찾기를 누르시면 등록된 이메일 조회 후 이메일로 인증번호를 전송합니다.
+			</div> 
+
+
+			<div class="inp-wrap"> 
+				<input type="text" id="userID" name="userID"  class="inp-txt full" placeholder="아이디"  /> 
+			</div>  
+
+			<div class="inp-wrap"> 
+				<input type="text" id="userPhone" name="userPhone"  class="inp-txt full" placeholder="헨드폰번호"  /> 
+			</div>  
+
+			<div class="inp-wrap"> 
+				<input type="text" id="userEMAIL" name="userEMAIL"  class="inp-txt full" placeholder="E-MAIL"  /> 
+			</div>  
+
+			<div class="inp-wrap">
+				<select id="userNation" name="userNation" class="inp-txt full" style="font-size: 14px;   background-color:#DADADA;  ">
+					<option value="" >::: NATION 선택 :::</option>
+					<option value="kr">한국</option>
+					<option value="Cn">중국</option>
+					<option value="jp">일본</option>
+					<option value="vn">베트남</option>
+					<option value="pp">필리핀</option>
+				</select> 
+			</div>  
+
+			<div class="btn-wrap" style="margin-top: 30px;">
+				<button type="button" id="btn_find" class="btn-confirm"> 찾기 </button>
+			</div>   
+
+
+			<div class="inp-wrap" style="margin-top: 30px; height: 44px;">
+				<div class="inp-wrap" style="width:  70%; display: inline-block;"> 
+					<input type="text" id="authMuber" name="authMuber"  class="inp-txt full" placeholder="인증번호입력"  /> 
+				</div>  
+				<div id="btn_action_Auth" style="width:  26%; background-color:#1e7aff; color: #FFF;height: 42px; line-height: 42px; text-align: center; display: inline-block;margin-left: 20px; ">
+					인증번호 
+				</div>
+
+				<input type="hidden" id="ar" name="ar"/>
+			</div>
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+</html>

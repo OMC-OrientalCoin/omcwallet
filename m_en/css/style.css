@@ -1,0 +1,44 @@
+@charset "utf-8";
+
+/*///////////////////// header /////////////////////*/
+.header-sub {height: 50px;background: #1e7aff;}
+.header-sub__tit {
+	position: absolute;
+	top: 12px;
+	left: 712px;
+	height: 26px;
+	color: #fff;
+	font-weight: bold;
+	font-size: 14px;
+	transform: translateX(-50%);
+}
+/*///////////////////// header End /////////////////////*/
+
+/*///////////////////// container /////////////////////*/
+.main-info {padding: 40px 0 72px;}
+.main-info__txt1 {color: #fff;font-weight: 500;font-size: 13px;text-align: center;line-height: 1em;letter-spacing: -0.025em;}
+.main-info__amount {margin-top: 28px;text-align: center;}
+/* background: url(../img/main/tm.png) no-repeat 0 2px; */
+.main-info__amount-num {display: inline-block;padding: 0 0 1px 30px;color: #fff;font-size: 30px;font-weight: bold;letter-spacing: 0.01em;line-height: 27px;background-size: auto 26px;}
+.main-info__btn {margin-top: 32px;text-align: center;font-size: 0;}
+.main-info__btn-item {display: inline-block;margin: 0 10px;}
+.main-info__btn-item button {width: 105px;color: #1e7aff;font-weight: bold;font-size: 12px;line-height: 36px;text-align: center;background: #fff;border-radius: 18px;}
+.your-acc__tit {color: #333;font-size: 17px;font-weight: 350;}
+.your-acc-box {padding: 0 18px;margin-top: 13px;background: #fff;box-shadow: 0 0 9px rgba(0,0,0,0.07);}
+.your-acc-box1 {position: relative;height: 50px;padding-top: 16px;border-bottom: 1px solid #ddd;box-sizing: border-box;}
+.your-acc-box1__name {float: left;padding-left: 24px;color: #333;font-weight: 900;font-size: 13px;letter-spacing: -0.025em;line-height: 20px;background: url(../img/main/tm.png) no-repeat 0 1px;background-size: auto 19px;}
+.your-acc-box__set {position: absolute;top: 19px;right: 20px;width: 13px;height: 13px;background: url(../img/main/btn_wallet_setting.png) no-repeat;background-size: 100%;}
+.your-acc-box__more {position: absolute;top: 19px;right: -1px;width: 7px;height: 12px;background: url(../img/main/btn_wallet_more.png) no-repeat;background-size: 100% 12px;}
+.your-acc-box2 {position: relative;height: 63px;padding-top: 15px;box-sizing: border-box;}
+.your-acc-box2__sub1 {color: #999;font-size: 11px;line-height: 1em;}
+.your-acc-box2__sub2 {margin-top: 8px;color: #333;font-weight: 900;font-size: 13px;line-height: 1em;}
+.main-add {position: fixed;bottom: 82px;right: 15px;border-radius: 50%;box-shadow: 0 0 16px rgba(0,0,0,0.27);}
+.main-add__btn {width: 38px;height: 38px;background: url(../img/main/btn_main_add.png) no-repeat;background-size: 100%;}
+
+.login-txt {padding: 35px 0 33px;color: #333;font-size: 13px;font-weight: 500;text-align: center;line-height: 1em;}
+.login .btn-wrap {margin-top: 33px;}
+
+.coin-send-top {height: 117px;padding-top: 27px;margin: 0 -15px;background: #1e7aff;box-sizing: border-box;}
+.coin-send-top__txt {color: #fff;font-weight: 500;font-size: 13px;text-align: center;line-height: 1em;letter-spacing: -0.025em;}
+.coin-send-top__amount {margin-top: 16px;text-align: center;}
+.coin-send-top__amount-num {display: inline-block;padding: 0 0 1px 30px;color: #fff;font-size: 30px;font-weight: bold;letter-spacing: 0.01em;line-height: 27px;background: url(../img/main/tm.png) no-repeat 0 2px;background-size: auto 26px;}

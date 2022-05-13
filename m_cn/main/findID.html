@@ -1,0 +1,134 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$('#btn-home').on('click', function () {
+				$(location).attr('href',"/m_cn/main/index.html");
+			});
+
+			$( "#btn_action" ).on('click', function (e)  
+			{
+				e.preventDefault(); 
+
+				let userID = "";
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val(); 
+				let userNation = $("#userNation option:selected").val(); 
+				
+				//if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;} 
+				if(!userPhone){alert("請輸入您的手機號碼. "); $('#userPhone').focus(); return false;} 
+				else if(!userEMAIL){alert("請輸入用戶EMAIL. "); $('#userEMAIL').focus(); return false;} 
+				else if(!userNation){alert("請輸入您的國家. "); $('#userNation').focus(); return false;} 
+				else{
+					userID =  findIDFunc(userPhone,userEMAIL,userNation);
+
+					$('#userID').val(userID);
+				}
+				
+				
+
+	  		});// btn_join 
+		});
+
+		function findIDFunc(userPhone,userEMAIL,userNation)
+		{
+
+			//var kind = $(':radio[name="kind"]:checked').val(); 
+			let params = {userPhone:userPhone,userEMAIL:userEMAIL,userNation:userNation};
+			let goURL = "";
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: "/m_cn/module/findID.php",
+				data: params,
+				async: false
+			}).responseText;  
+
+			return returnValue;
+			
+		}//findIDFunc()
+
+
+	</script> 
+</head>
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">找身份證</h1>
+			<button type="button" id="btn-home" class="btn-home" style="font-size: 18px;font-weight: bold; line-height: 30px; color: #FFF;text-align: center; margin-top: 10px; margin-left: 20px;">
+				<
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">注意</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">	
+
+			<div id=""  class="inp-txt full"  style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin: 20px 0px;" >  
+				身份證搜索指南 <br/>
+				輸入您註冊的手機號碼和郵箱 <br/>
+				請選擇註冊國家 
+			</div> 
+			
+			<div class="inp-wrap">  
+				<input type="text" id="userPhone" name="userPhone"  class="inp-txt full" placeholder="手機號碼"  /> 
+			</div>  
+
+			<div class="inp-wrap">
+				<input type="text" id="userEMAIL" name="userEMAIL"  class="inp-txt full" placeholder="電子郵件"  /> 
+			</div> 
+
+			<div class="inp-wrap">
+				<select id="userNation" name="userNation" class="inp-txt full" style="font-size: 14px;   background-color:#DADADA;  ">
+					<option  value="" >::: 國家選擇 :::</option>
+					<option value="kr">韓國</option>
+					<option value="Cn">中國</option>
+					<option value="jp">日本</option>
+					<option value="vn">越南</option>
+					<option value="pp">菲律賓</option>
+				</select>
+
+			</div> 
+
+			<div class="btn-wrap" style="margin-top: 30px;">
+				<button type="button" id="btn_action" class="btn-confirm"> 尋找 </button>
+			</div>  
+
+			<div id="retValuewrap" class="inp-wrap" style="display: none;" >
+				<div id="" class="inp-wrap">>你要找的身份證 </div>
+				<div id="" class="inp-wrap">>
+					<input type="text" id="userID" name="userID" readonly="readonly" class="inp-txt full"  style="font-size: 14px;   background-color:#DADADA; border: none; " />
+				</div>
+			</div>
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+</html>

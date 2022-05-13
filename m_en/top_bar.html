@@ -1,0 +1,43 @@
+	<div id="" class="header_wrap"> 
+		<div id="btn_left_menu" class="header_cell" style="width: 10%;">M</div>
+		<div id="pageTitle" class="header_cell" style="width: 70%; font-size: 18px;font-weight: bold;text-align: center;"></div>
+		<div id="" class="header_cell" style="width: 10%;">A</div>
+	</div> 
+
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#pageTitle").html("<?=$_POST['pageTitle'];?>")
+
+
+			$("#btn_left_menu").on('click', function (e) 
+			{  
+
+
+				$("#menu_left").load("leftMenu.html");
+
+				$( "#menu_left" ).animate({
+				//opacity: 0.9,
+				left: "+=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+			});
+
+			$("#menu_left").on('click', function (e) 
+			{  
+
+				$("#menu_left").load("leftMenu.html");
+
+				$( "#menu_left" ).animate({
+					opacity: 0.9,
+					left: "-=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+			});
+		});
+	</script>

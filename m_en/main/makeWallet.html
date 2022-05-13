@@ -1,0 +1,175 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function () {
+
+			let USERID = "<?=USERID;?>";
+
+			$("#gnb").load("gnb.html", { USERID: USERID });
+			$("#footer").load("foot_menu.html");
+
+			$("#btn_make").on('click', function () {
+				let wallet_password = $("#wallet_password").val();
+				let wallet_password_comp = $("#wallet_password_comp").val();
+
+				if (!wallet_password) {
+					alert("Please enter your wallet password.");
+					$("#wallet_password").focus();
+					return false;
+
+				} else if (!wallet_password_comp) {
+
+					alert("Please enter your wallet password confirmation.");
+					$("#wallet_password_comp").focus();
+
+				} else if (wallet_password != wallet_password_comp) {
+
+					alert("The wallet password and wallet password verification do not match. \nPlease check. ");
+					$('#wallet_password_comp').focus();
+					return false;
+
+				} else {
+
+					var passRule = /^[A-Za-z0-9]{6,12}$/;//숫자와 문자 포함 형태의 6~12자리 이내의 암호 정규식
+
+					if (!passRule.test($("input[id='PASS']").val())) {
+						return flase;
+					} else {
+						setNewAccount("newWalletAddress", USERID, wallet_password);
+
+					}
+				}
+			});
+		});
+
+		function setNewAccount(divID, USERID, walletPasswd) {
+			console.log("setNewAccount ----> ", USERID + " | " + walletPasswd)
+			if (!USERID) {
+				alert("You are logged out");
+				return false;
+
+			} else if (!walletPasswd) {
+
+				alert("There is no password.\nPlease check again");
+				return false;
+
+			} else {
+
+				var jURL = "/m_en/module/personal_newAccount.php";
+				var params = { walletPasswd: walletPasswd };
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);
+
+				var walletAddress = obj.result;
+				console.log("setNewAccount", USERID + " | " + walletPasswd + " | " + walletAddress + " | " + returnValue)
+
+
+				$("#newWalletAddress_Wrap").show();
+				$("#newWalletAddress").html(walletAddress);
+
+				setWallet(USERID, walletAddress)
+			}
+
+		}
+
+
+		function setWallet(USERID, walletAddress) {
+
+			console.log("setWallet", USERID + " | " + walletAddress)
+			var jURL = "/m_en/module/set_wallet.php";
+			var params = { userID: USERID, walletAddress: walletAddress };
+
+			$.post(jURL, params)
+				.done(function (data) {
+
+					let state = parseInt(data)
+
+					console.log("setNewAccount", USERID + " | " + walletAddress + data)
+
+					if (state > 0) {
+						alert("Your wallet has been created");
+						$(location).attr('href', "main.html");
+					} else {
+						alert("Wallet creation failed.");
+					}
+				});
+
+		}
+
+	</script>
+</head>
+
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">Create a wallet</h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">Open Menu</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">Notice</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+			<div id="container" class="container container-sub">
+				<div class="inp-wrap__tit">wallet password</div>
+				<div class="inp-wrap" style="margin-bottom: 4px;">
+					<input type="password" id="wallet_password" class="inp-txt full " placeholder="Enter your wallet password.">
+				</div>
+				<div class="inp-wrap" style="margin-bottom: 30px; color: red;">
+					Please enter a password of at least 6 characters including numbers.
+				</div>
+
+				<div class="inp-wrap__tit">Confirm wallet password</div>
+				<div class="inp-wrap" style="margin-bottom: 30px;">
+					<input type="password" id="wallet_password_comp" class="inp-txt full "
+						placeholder="Please re-enter your wallet password.">
+				</div>
+				<div class="inp-wrap">
+					<button type="button" id="btn_make" class="btn-confirm"> Create a wallet </button>
+				</div>
+				<div id="newWalletAddressWrap" style="display: none; margin-top: 30px;">
+					<div class="inp-wrap__tit">wallet address</div>
+					<div id="newWalletAddress" class="inp-wrap" style="margin-top: 30px;"></div>
+				</div>
+
+			</div>
+		</div><!-- //container End -->
+
+	</div>
+
+	<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+
+</html>

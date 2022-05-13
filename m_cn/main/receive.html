@@ -1,0 +1,201 @@
+<?php
+@session_start(); 
+define("USERID",  	 @$_SESSION['userID']);
+define("USERWALLET", @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="/m_cn/css/common.css">
+	<link rel="stylesheet" href="/m_cn/css/layout.css">
+	<link rel="stylesheet" href="/m_cn/css/style.css">
+	<script src="/m_cn/js/jquery-3.3.1.min.js"></script>
+	<script src="/m_cn/js/script.js"></script> 
+	<script src="/m_cn/js/jsfunc_omcwallet.js" type="text/javascript"></script> 
+	<script src="/m_cn/js/bignumber.min.js"></script> 
+	<script src="/m_cn/js/qrcode.min.js"></script> 
+	<title>OMC MAIN</title>
+
+	<script type="text/javascript">
+		$(function()
+		{  
+ 
+			$("#gnb").load("gnb.html",{ USERID:"<?=USERID;?>" });   
+			$("#footer").load("foot_menu.html",{footer_state:"send"});     
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=USERWALLET;?>"; 
+ 	
+			getMyWalletAddressforReceive("MyWalletAddressWrap",USERID ); 
+			//getBalance("getbalance",MyWalletAddress );
+
+			$("#btn_send_m").on('click',function(){  
+				$(location).attr('href',"send.html");
+			});
+
+			$("#btn_recv_m").on('click',function(){  
+				$(location).attr('href',"receive.html");
+			});
+
+
+			$("#btn_wallet_add").on('click',function(){  
+				$(location).attr('href',"makeWallet.html");
+			});
+
+
+			$("#btn_send_QRCODE").on('click', function(){  
+
+// 				let toEmail = $("#toEmail").val();
+// 				if(toEmail){
+					
+// 					$(location).attr('href',"kakao.html");
+
+// //					validateEmail(toEmail)
+// //					alert("QR CODE 보내기");
+				
+// 				}else{
+// 					alert("상대 이메일을 입력하여 주세요");
+// 					$("#toEmail").focus();
+// 					return false;
+// 				}
+
+				alert("QR CODE 보내기");
+				
+
+			});
+ 
+
+			
+			if($("#rvWalletAddress").val() !="")
+			{
+				var qrcode = new QRCode(document.getElementById("qrcode"), {
+					text: WalletAddress,
+					width: 250,
+					height: 250,
+					colorDark : "#000000",
+					colorLight : "#ffffff",
+					correctLevel : QRCode.CorrectLevel.H
+				});
+
+			}	 
+		});
+
+		function QRCodeMake(divID,WalletAddress)
+		{
+			var qrcode = new QRCode(document.getElementById(divID), {
+				text: WalletAddress,				
+				float:"center",
+				colorDark : "#000000",
+				colorLight : "#ffffff",
+				correctLevel : QRCode.CorrectLevel.H
+			});
+
+			return qrcode;
+		}
+
+		function getMyWalletAddressforReceive(divID,userID)
+		{  
+			 
+			var jURL   = "/m_cn/module/get_MyWalletAddress.php";
+			var params = { userID:userID};   
+		
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+	
+	 
+			var obj = $.parseJSON(returnValue);  
+ 
+			if(obj == null )
+			{
+				alert("我沒有錢包.  ");
+				return false;
+	
+			}else{ 
+	 
+	
+				var tmpForm = "";
+				var balance = "";
+				var balance_total = 0;
+				var balance_format = 0;
+				let xBalance = 0;
+				let tmpLength = 0;
+	
+				$("#"+divID).html("")
+	
+				
+				$("#rvWalletAddress").val(obj[0].walletAddress);
+				// for(var i=0;i<obj.length;i++)
+				// {   
+
+				// 	let x =  new BigNumber(balance) 
+				// 	var z =  x.toString(10);  
+				// 		 z = Math.floor(z)
+				// 	let WalletAddress =  obj[i].walletAddress;
+					 
+
+				// 	tmpForm += "<div class='your-acc-box walletAddress' style='width: 100%;'> ";
+				// 	tmpForm += "	<div id='w_"+WalletAddress+"_"+obj[i].userID+"_"+obj[i].idx+"'  class='cell ' style='width:83%; display: inline-block; cursor:pointer; '>";
+				// 	tmpForm += "		<p class='your-acc-box2__sub2' >"+WalletAddress+"</p>";
+ 				// 	tmpForm += "	</div>";
+					
+				// 	tmpForm += "	<div id='qrImg_"+WalletAddress+"'  class='cell' style='width: 5%; display: inline-block;  '></div>";
+				// 	tmpForm += "</div>";
+	
+				// 	QRCodeMake("qrImg_"+WalletAddress,WalletAddress)
+				// }  
+				// 		//balance_total = balance_total.toString(10);
+				// $("#"+divID).html(tmpForm);
+					 
+	
+			}//if
+		} 
+	</script>
+
+</head>
+<body>
+	<div id="wrap" class="wrap"> 
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">硬幣接收</h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">打開所有菜單</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">注意</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+		
+		<div id="container" class="container container-main container-fm">		 
+			<div class="inp-wrap__tit">我的錢包 </div>
+			<div id="MyWalletAddressWrap" class="your-acc" style="font-weight: bold;"> </div>
+			<div class="inp-wrap" style="margin-bottom: 50px;">  
+				<input type="text"  id="rvWalletAddress" class="inp-txt full  "  readonly="readonly" style="border: none;font-weight: bold;" />
+			</div> 
+ 
+			<div class="inp-wrap" style="text-align: center;margin-bottom: 50px;"> 
+				 
+				<div id="qrcode" style="display: inline-block; padding: 10px;margin: 0 auto;"> </div> 
+			</div> 
+	 
+
+			<div class="inp-wrap" >
+				<button type="button" id="btn_send_QRCODE"  class="btn-confirm"> QR CODE 出口 </button>
+			</div>
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"></footer>
+		<input type="hidden" id="WalletAddress" value="<?=$_GET['wallet'];?>">
+	</div>
+</body>
+</html>

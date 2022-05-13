@@ -1,0 +1,188 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		input{ width: 100%; padding: 4px; background-color: #DADADA; border:none; }
+
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 80%;
+			height:auto;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{   
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=WALLET;?>";
+
+			$("#myWALLETAddress").html(MyWalletAddress);
+
+
+			$("#top").load("top_bar.html",{ pageTitle: "지갑만들기" });  
+
+			$("#btn_makeWallet").on('click', function (e) 
+			{   
+				let wState = "";
+				if(MyWalletAddress)
+				{
+					var con_test = confirm("이미 OMC 지갑이 있습니다. 추가 하시겠습니까?");
+					if(con_test == true)
+					{
+						wState = true;
+					}
+					else if(con_test == false){
+						alert("취소하셨습니다.");
+						wState = false;
+						return false;
+					}
+
+					if(!$("#wallet_Passwd").val())
+					{
+						alert("지갑비밀번호를 입력 해 주세요. "); 
+						$('#wallet_Passwd').focus(); 
+						
+					}
+
+					if(!$("#wallet_passwd_comp").val())
+					{
+						alert("지갑비밀번호확인을 입력 해 주세요. "); 
+						$('#wallet_passwd_comp').focus(); 
+						return false;
+					}
+
+					if($("#wallet_Passwd").val() != $("#wallet_passwd_comp").val())
+					{
+						alert("지갑 비밀번호와  지갑 비밀번호 확인이 맞지 않습니다. \n확인하여 주세요. "); 
+						$('#wallet_passwd_comp').focus(); 
+						return false;
+					}  
+
+					let wallet_Passwd = $("#wallet_Passwd").val();
+					setNewAccount("myAddress",USERID,wallet_Passwd,wState)
+
+				}
+
+			});//btn_makeWallet  
+
+ 		});//jquery  
+
+		function setNewAccount(divID,userID,walletPasswd,wState)
+		{
+console.log("setNewAccount ----> ", userID+" | "+walletPasswd+" | "+wState )
+
+
+			if(!userID)
+			{
+				alert("로그 아웃 상태입니다.");  
+				return false;
+			}
+
+			if(!walletPasswd)
+			{
+				alert("비밀번호가 없습니다.\n다시 확인하여 주십시요.");  
+				return false;
+			}
+
+			var jURL   = "/m/module/personal_newAccount.php";
+			var params = {walletPasswd:walletPasswd};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			var obj = $.parseJSON(returnValue); 
+
+			var walletAddress = obj.result;
+			console.log("setNewAccount", walletPasswd+" | "+walletAddress )
+
+			$("#myAddressWrap").show();
+			$("#myAddress").html(walletAddress);
+
+			setWallet(userID,walletAddress)
+		}
+
+		function setWallet(userID,walletAddress,wState)
+		{
+
+
+			var jURL   = "/m/module/set_wallet.php";
+			var params = { userID:userID,walletAddress:walletAddress,wState:wState};   
+
+			$.post( jURL,params)
+			.done(function( data ) {
+				alert( "setWallet Data Loaded: " + data );
+			});
+
+		}
+
+	</script>
+
+</head>
+<body>
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "></div>
+
+	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+	<div id="myAddressWrap" class="content_wrap" style="width: 80%;  padding: 5%; margin: 10px auto; " >
+		<div id="" class="cell_wrap">현재 지갑주소</div>
+		<div id="myWALLETAddress" class="cellField" style="width: 100%; height: 22px; padding: 3px; font-size: 16px;"></div>
+	</div>  
+
+	<div id="" class="content_wrap" style="width: 80%;height: 80%; padding: 5%; margin: 10px auto; " >
+		<div id="" class="content_body" style="color: red;font-weight: bold; margin-top: 50px; padding-top: 10px; border-top: 1px solid #000; ">
+			지갑주소를 만들기 위한 비밀번호 입력페이지입니다.<br/>
+			비밀번호는 주의하여 보관하시고 잃어버리지 마시기 바랍니다.
+			<br/>
+			지갑생성용 비밀번호는 저장되지 않습니다. 
+		</div>  
+
+		<div id="" class="cell_wrap " style=" width: 100%; height: auto;margin-top: 50px;">  
+			<input type="password" id="wallet_Passwd" name="wallet_Passwd"  class="inputField" placeholder="지갑비밀번호"/> 
+		</div> 
+		<div id="" class="cell_wrap " style=" width: 100%; height: auto;margin-top:10px;">  
+			<input type="password" id="wallet_passwd_comp" name="wallet_passwd_comp"  class="inputField" placeholder="지갑비밀번호확인"/> 
+		</div> 
+
+		<div id="btn_makeWallet" class="" style="text-align: center; margin-top: 30px; font-size: 16px; padding:8px;background-color:#1e7aff; color: #FFF;width:  100%; padding: 8px 0px;"> 		지갑만들기  
+		</div>
+
+
+		<div id="myAddressWrap" class="content_body" style="margin-top: 50px; display: none;">
+			<div id="" class="cellLabel">지갑주소</div>
+			<div id="myAddress" class="cellField" style="width: 100%; height: 22px; padding: 3px;background-color: #dadada;">  </div>
+		</div> 
+
+	</div>
+</body>
+</html>
+

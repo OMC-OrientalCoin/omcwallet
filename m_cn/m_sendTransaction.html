@@ -1,0 +1,240 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		input{ width: 100%; padding: 4px; background-color: #DADADA; border:none; }
+
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+			$("#top").load("top_bar.html",{ pageTitle: "코인보내기" }); 
+			/*var filter = "win16|win32|win64|mac|macintel";
+
+			if ( navigator.platform ) { 
+				if ( filter.indexOf( navigator.platform.toLowerCase() ) < 0 ) { 
+					//mobile 
+					//alert('mobile 접속'); 
+				} else { 
+					//pc 
+				//	alert('pc 접속'); 
+			} 
+		}
+		*/
+
+		$("#btn_left_menu").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				//opacity: 0.9,
+				left: "+=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+		$("#menu_left").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				opacity: 0.9,
+				left: "-=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+		//alert(" 아이디찾기 이동 ");  
+		$("#btn_send").on('click', function (e) 
+		{    
+
+			let senderWellet = $('#senderWellet').html(); 
+			let receiverWellet = $('#receiverWellet').val(); 
+			let sendAmount = $('#sendAmount').val(); 
+			let senderPassword = $('#senderPassword').val(); 
+
+			if(!senderWellet){alert("보내는이 주소가 없습니다. "); $('#senderWellet').focus(); return false;}
+			if(!receiverWellet){alert("받는이 지갑주소를  입력해 주세요. "); $('#receiverWellet').focus(); return false;}
+			if(!sendAmount){alert("보낼 수량을 입력해 주세요. "); 		  $('#sendAmount').focus(); return false;} 
+			if(!senderPassword){alert("비밀번호를 입력해 주세요. "); 		  $('#senderPassword').focus(); return false;} 
+
+
+
+			sendTransation("getBalance_after",senderWellet,senderPassword,receiverWellet,sendAmount);
+
+
+	  	});//  
+
+
+
+		let USERID = "<?=USERID;?>";
+		let MyWalletAddress = "<?=WALLET;?>";
+
+		$('#userID').html(USERID); 
+		$('#MyWalletAddress').html(MyWalletAddress);
+
+		getBalance("myBalance",MyWalletAddress );
+ 		});//jquery 
+
+
+		function sendTransation(divID,from,passphrase,to,value)
+		{
+
+			let lock_state = unlock( from,passphrase);
+
+			if(lock_state)
+			{
+				var jURL   = "/m/module/eth_transaction.php";
+				var sendAmount_Hex = "0x"+value.toString(16); // === "7b" 
+				console.log("sendAmount_Hex",  sendAmount_Hex)
+				var params = { from:from,to:to,value:sendAmount_Hex};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				console.log("송금 -->",returnValue)
+				var obj = $.parseJSON(returnValue);  
+
+				$.post( "/module/set_transaction_omc.php", { tx_hash: obj.result })
+				.done(function( retdata ) {
+					console.log("set_transaction_omc  -->",retdata) ;
+				});
+				$("#"+divID).html(obj.result);
+
+				lock(from);
+				alert("송금되었습니다.")
+
+				getBalance("myBalance",from )
+
+			}else{
+				alert("error code u001")
+			}
+
+		}
+
+		function getBalance(divID,address )
+		{  
+			var jURL   = "/m/module/eth_getBalance.php";
+			var params = { address:address};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			console.log("getBalance ",returnValue)
+			var obj = $.parseJSON(returnValue);  
+			/* var balance = parseInt(obj.result, 16);   
+			$("#"+divID).html(obj.result);*/
+			var value =  obj.result ; 
+			value =  value.substring(2,value.length);
+			value = addCommas(value);
+			$("#"+divID).html(value);
+
+		}//getBalance()
+
+
+		function addCommas(x) {
+			x = x?x:0;
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+		}
+
+	</script>
+
+</head>
+<body>
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "> </div>
+
+	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+	<div id="" class="" style="width: 90%; height:80%;  margin-top: 20px; margin:0 auto;  " > 
+
+
+
+		<div id="" class=" " style="   width:  90%; margin: 20px auto;  " >  
+			<div id="btn_join" class="cell  ">내 지갑주소:</div>
+			<div id="senderWellet" class="cell datafield"  > 
+				<?=WALLET;?>
+			</div>
+		</div> 
+
+		<div id="" class=" " style="   width:  90%; margin: 20px auto;  " >  
+			<div id="btn_join" class="cell  ">내 보유수량:</div>
+			<div id="myBalance" class="cell datafield"></div>
+		</div> 
+
+
+		<div id="" class=" " style="   width:  90%; margin: 20px auto;  " >  
+			<div id="btn_join" class="cell  ">받는이 지갑주소:</div>
+			<div id="" class="cell datafield"  > 
+				<input type="text" id="receiverWellet" name="receiverWellet" class="inputField"  />
+			</div>
+		</div> 
+
+		<div id="" class=" " style="  width:  90%; margin: 20px auto;  " >  
+			<div id="btn_join" class="cell  ">보낼 수량</div>
+			<div id="" class="cell  datafield" ><input type="text" id="sendAmount" name="sendAmount" class="inputField"  /></div>
+		</div> 
+
+		<div id="" class=" " style=" width:  90%; margin: 20px auto;" >  
+			<div id="btn_join" class="cell  ">비밀번호</div>
+			<div id="" class="cell datafield "   >  <input type="password" id="senderPassword" name="senderPassword" class="inputField" /></div>
+		</div> 
+
+
+
+		<div id="btn_send" style="width:  90%; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 10px 0px; text-align: center; font-weight: bold;font-size: 16px;">
+			송금
+		</div>
+
+	</div> 
+</div> 
+</div> 
+
+
+</body>
+</html>
+

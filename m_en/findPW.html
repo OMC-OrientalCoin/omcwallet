@@ -1,0 +1,216 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+		<style type="text/css"> 
+		input{ width: 96%; padding: 6px; background-color: #DADADA; border:none; }
+		div{margin: 0px; padding: 0px;}
+		.cell_wrap{margin-bottom: 10px;}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#top").load("top_bar_nomenu.html",{ pageTitle: "OMC 비밀번호찾기" ,btn_left_menu:"< HOME" });
+			 
+			$( "#joinForm" ).submit(function( e )
+			{
+				e.preventDefault();
+				//회원가입  
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val(); 
+				let userNation = $('#userNation').val(); 
+
+
+				if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;} 
+				if(!userPhone){alert("핸드폰 번호를 입력해 주세요. "); $('#userPhone').focus(); return false;} 
+				if(!userEMAIL){alert("userEMAIL을 입력해 주세요. "); $('#userEMAIL').focus(); return false;} 
+				if(!userNation){alert("국가를 를 입력해 주세요. "); $('#userNation').focus(); return false;} 
+
+
+
+
+				var url = $(this).attr( "action" );
+				var data = $(this).serialize();
+
+				let  chk_pw_state = chk_password(data);
+				let  chk_pw_auth = "";
+
+				if(chk_pw_state)
+				{  
+					chk_pw_auth = genAuthNumber(userEMAIL);
+				}else{
+
+					alert("등록된 정보를 찾을 수 없습니다.\n입력하신 내용을 확인하여 주십시요.")
+					return false;
+				}
+
+	  		});// btn_join
+
+//
+			$("#btn_action_Auth").on('click', function (e) 
+			{   
+				let authMuber = $('#authMuber').val();
+
+				if(authMuber){
+					$(location).attr('href',"findPW_sub.html"); 
+				}else{
+					alert("인증번호를 입력해 주세요. "); 
+					$('#userID').focus(); 
+					return false;
+				}  
+	  		});//  btn_action_Auth
+
+
+
+ 		});//jquery 
+	 
+		function chk_password(data)
+		{
+
+			//var kind = $(':radio[name="kind"]:checked').val(); 
+			let params = { data:data};
+			let goURL = "";
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: "/m/module/chk_password.php",
+				data: params,
+				async: false
+			}).responseText; 
+
+			console.log("login -->",returnValue)
+
+			if(Number(returnValue)>0 ) 
+				return true; 
+			else
+				return false; 
+
+
+		}//chk_password()
+
+
+		function genAuthNumber(userEMAIL)
+		{ 
+			let params = { userEMAIL: userEMAIL};
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: "/m/module/genAuthNumber.php",
+				data: params,
+				async: false
+			}).responseText;  
+
+			if(Number(returnValue)>0 ) 
+				$("#ar").val(returnValue)
+			else
+				return false; 
+
+		}//chk_password()
+
+		function sendAuthNumber(userEMAIL)
+		{
+			alert(" 이메일로 인증번호를 전송하엿습니다.");
+
+			let url = "/m/module/sendauthMailling.php";
+
+			$.post(url,  { userEMAIL:userEMAIL})
+				.done(function( data ) {
+					console.log( data );
+				});
+
+
+		}//chk_password()
+
+	</script>
+
+</head>
+<body>
+ 	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+
+
+	<div id="" class="content_wrap" style="width: 90%;height: 80%; padding: 3%;" >
+		<form name="joinForm" id="joinForm" method="post" action="module/set_member_rec.php">
+			<div id="" class="content_wrap"> 
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel ">아이디</div>
+					<div id="" class="cellField">
+						<input type="text" id="userID" name="userID"  class="inputField"  />
+					</div>
+				</div>  
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel ">헨드폰번호</div>
+					<div id="" class="cellField">
+						<input type="text" id="userPhone" name="userPhone"  class="inputField"  />
+					</div>
+				</div>  
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel ">E-MAIL</div>
+					<div id="" class="cellField"><input type="text" id="userEMAIL" name="userEMAIL"  class="inputField"  /></div>
+				</div> 
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel ">NATION</div>
+					<div id="" class="cellField">
+						<select id="userNation" name="userNation" style="font-size: 14px; padding:4px; width:  96%; background-color:#DADADA;  ">
+							<option  >::: 선택 :::</option>
+							<option value="kr">한국</option>
+							<option value="Cn">중국</option>
+							<option value="jp">일본</option>
+							<option value="vn">베트남</option>
+							<option value="pp">필리핀</option>
+						</select>
+					</div>
+				</div>  
+
+				<div id="" class="content_body  " style="text-align: center;margin-top: 20px;">
+					찾기를 누르시면 등록된 이메일 조회 후 이메일로 인증번호를 전송합니다.
+				</div>
+
+
+				<div id="btn_action" style="width:  90%; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 8px 0px; text-align: center;">
+					FIND
+				</div>
+				
+			</form>
+
+
+			<div id="" class="content_body"> 
+					<div id="" class="cellField">
+						<input type="text" id="authMuber" name="authMuber"  class="inputField" placeholder="인증번호입력" />
+					</div>
+				</div> 
+
+				<div id="btn_action_Auth" style="width:  90%; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 8px 0px; text-align: center;">
+					인증번호 
+				</div>
+
+				<div id="" class="content_body  " style="text-align: center;margin-top: 20px;">
+					인증번호를 전송합니다.
+				</div>
+			</div> 
+		</div> 
+	</div>
+	<input type="hidden" id="ar" name="ar"/>
+</body>
+</html>
+

@@ -1,0 +1,81 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+
+	<style type="text/css"> 
+		input{ width: 96%; padding: 6px; background-color: #DADADA; border:none; }
+		div{margin: 0px; padding: 0px;}
+		.cell_wrap{margin-bottom: 10px;}
+	</style>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#top").load("top_bar_nomenu.html",{ pageTitle: "OMC 아이디찾기" ,btn_left_menu:"< HOME" });  
+ 		});//jquery 
+
+
+
+ 	</script>
+
+ </head>
+ <body> 
+ 	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div>  
+
+ 	<div id="" class=" " style="width: 84%;height: 70%;  padding: 5%; margin: 0 auto;" > 
+ 		<div id="" class="  "  style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin-bottom: 20px;" >  
+ 			아이디 찾기 안내 <br/> 
+ 		</div>
+
+ 		<form name="joinForm" id="joinForm" method="post" action="/m/module/set_member_rec.php">
+ 			<div id="" class="cell_wrap">   
+ 				<input type="text" id="userEuserPhoneMAIL" name="userPhone"  class="inputField" placeholder="헨드폰번호"  /> 
+ 			</div>  
+
+ 			<div id="" class="cell_wrap">
+ 				<input type="text" id="userEMAIL" name="userEMAIL"  class="inputField" placeholder="E-MAIL"  /> 
+ 			</div> 
+
+ 			<div id="" class="cell_wrap"> 
+ 				<select id="userNation" name="userNation" style="font-size: 14px; padding:4px; width:  96%; background-color:#DADADA;  ">
+ 					<option  >::: NATION 선택 :::</option>
+ 					<option value="kr">한국</option>
+ 					<option value="Cn">중국</option>
+ 					<option value="jp">일본</option>
+ 					<option value="vn">베트남</option>
+ 					<option value="pp">필리핀</option>
+ 				</select>
+
+ 			</div> 
+
+ 			<div id="btn_action" class="cell_wrap" style="width:  96%; background-color:#1e7aff; color: #FFF; margin-top: 50px; padding: 8px 0px; text-align: center;  ">
+ 				FIND
+ 			</div>
+
+ 		</form>
+
+
+ 		<div id="" class="cell_wrap" style="display: none;" >
+ 			<div id="" class="cellLabel ">찾으시는 아이디 </div>
+ 			<div id="" class="cellField">
+ 				<input type="text" id="userID" name="userID"  class="inputField"  />
+ 			</div>
+ 		</div>
+
+ 	</div>
+ </body>
+ </html>
+

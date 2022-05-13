@@ -1,0 +1,19 @@
+	<div id="" class="header_wrap"> 
+		<div id="btn_left_menu" class="header_cell" ></div>
+		<div id="pageTitle" class="header_cell" style="width: 80%; font-size: 18px; font-weight: bold;text-align: center;  "></div> 
+	</div> 
+
+	<script type="text/javascript">
+		$(function()
+		{   
+			$("#btn_left_menu").html("<?=$_POST['btn_left_menu'];?>") 
+			$("#pageTitle").html("<?=$_POST['pageTitle'];?>") 
+
+			$()
+			$("#btn_left_menu").on('click', function (e) 
+			{   
+				$(location).attr('href',"index.html");
+	  		});
+ 
+		});
+	</script>

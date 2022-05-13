@@ -1,0 +1,130 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en"> 
+<head>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<link rel="stylesheet" href="/m/css/omc_m.css" type="text/css"   rel="stylesheet"> 
+ <style type="text/css"> 
+		input{ width: 96%; padding: 6px; background-color: #DADADA; border:none; }
+		div{margin: 0px; padding: 0px;}
+		.cell_wrap{margin-bottom: 10px;}
+	</style>
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#top").load("top_bar_nomenu.html",{ pageTitle: "OMC 회원가입" ,btn_left_menu:"< HOME" });  
+
+			//$("#btn_join").on('click', function (e) 
+			$( "#joinForm" ).submit(function( e )
+			{
+				e.preventDefault();
+				//회원가입  
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val();
+
+				let userNation = $('#userNation').val(); 
+
+
+				if(!userID){alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false;}
+				if(!userPassword){alert("비밀번호를 입력해 주세요. "); $('#userPassword').focus(); return false;} 
+
+				if(!userName){alert("성명을 입력해 주세요. "); $('#userName').focus(); return false;} 
+				if(!userPhone){alert("핸드폰 번호를 입력해 주세요. "); $('#userPhone').focus(); return false;} 
+				if(!userEMAIL){alert("userEMAIL을 입력해 주세요. "); $('#userEMAIL').focus(); return false;} 
+				if(!userNation){alert("국가를 를 입력해 주세요. "); $('#userNation').focus(); return false;} 
+
+ 
+				var url = $(this).attr( "action" );
+				var data = $(this).serialize();
+
+				$.post( url, data )
+				.done(function( data ) {
+					console.log('--->', data);
+					alert("가입을 축하드립니다. \n로그인 페이지로 갑니다.")
+					$(location).attr('href',"index.html");
+				});
+
+	  		});// btn_join
+
+ 		});//jquery  
+
+ 	</script>
+
+ </head>
+ <body>  
+
+ 	<div id="top" class=" " style=" width: 100%; height: auto; ">  </div>   
+ 	<div id="" class=" " style="width: 84%;height: 70%;  padding: 5%; margin: 0 auto;" > 
+ 	<!-- Start-->
+	<form name="joinForm" id="joinForm" method="post" action="module/set_member_rec.php">
+ 			<input type="hidden" id="chkID_state" name="chkID_state"   /> 
+
+ 			<div id="" class="  "  style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin-bottom: 20px;" >  
+ 						회원가입 안내 <br/>
+ 						아이디는 5글자 이상 입력하세요<br/>
+ 						비밀번호는 5글자 이상 영어 숫자 특수문자를 입력하세요
+ 				</div>
+ 			 
+ 				<div id="" class="cell_wrap ">  
+ 						<input type="text" id="userID" name="userID"  class="inputField" placeholder="아이디 (5자이상) "/> 
+ 				</div>  
+
+ 				<div id="" class="cell_wrap">  
+ 						<input type="password" id="userPassword" name="userPassword"  class="inputField"  placeholder="비밀번호" /> 
+ 				</div> 
+
+ 				<div id="" class="cell_wrap "> 
+ 						<input type="password" id="passwd_comp" name="passwd_comp"  class="inputField"  placeholder="비밀번호확인"/>
+ 						<input type="hidden" id="chkPW_state" name="chkPW_state"   /> 
+ 					 
+ 				</div> 
+
+ 				<div id="" class="cell_wrap" style="margin-top: 20px;"> 
+ 					 <input type="text" id="userName" name="userName"  class="inputField"    placeholder="성명"/> 
+ 				</div> 
+
+ 				<div id="" class="cell_wrap">
+ 					 <input type="text" id="userPhone" name="userPhone"  class="inputField" placeholder="모바일 전화번호" /> 
+ 				</div> 
+
+
+ 				<div id="" class="cell_wrap"> 
+ 					 <input type="text" id="userEMAIL" name="userEMAIL"  class="inputField" placeholder="E-MAIL" /> 
+ 				</div> 
+
+ 				<div id="" class="cell_wrap"> 
+ 					 
+ 						<select id="userNation" name="userNation" style="font-size: 14px; padding:4px; width:  96%; background-color:#DADADA;  ">
+ 							<option  >::: NATION 선택 :::</option>
+ 							<option value="kr">한국</option>
+ 							<option value="Cn">중국</option>
+ 							<option value="jp">일본</option>
+ 							<option value="vn">베트남</option>
+ 							<option value="pp">필리핀</option>
+ 						</select>
+ 					 
+ 				</div> 
+
+ 				<div id="" class="  " style="text-align: center; margin-top: 30px;">
+ 					<button id="btn_join" style="font-size: 16px; padding:8px;background-color:#1e7aff; color: #FFF;width:  90%; padding: 15px 0px;"> 가 입 </button> 
+ 				</div>
+ 			</form>
+
+ 			<!-- end-->
+ 	</div>
+</body>
+</html>
+

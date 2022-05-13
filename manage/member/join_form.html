@@ -1,0 +1,65 @@
+<style>
+.cell_wrap{width:100%;display: inline-block;padding: 2px 0px; margin: 1px 0px;}
+.cell_Label{width:13%;display: inline-block;}
+.cell_tail{width: 76%;display: inline-block;}
+.btn_group{ display: inline-block; padding:2px; cursor: pointer; }
+input[type="text"],input[type="password"] ,input[type="number"] { width: 46%;height:24px;background-color : #EAEAEA; border:none;padding:3px;font-size: 12px;}
+</style>
+<div style="width: 100%; height: 80px;font-size: 24px; border-bottom: 1px solid #000; margin-top: 30px;">
+	회원가입
+</div>
+<p class="tit">알라딘브이엠 회원가입 페이지 입니다.</p>
+<input type="hidden" id="chkID" />
+<div id=" " style="width: 100%; height: auto;margin: 0 auto; margin-top: 5px; padding: 20px; margin-bottom: 30px;">
+	<img src="/img/jj.png" />
+</div>
+
+<div id="btn_group" style="width: 100%; height: auto;margin: 0 auto; margin-top: 5px; padding: 20px; margin-bottom: 30px;">
+	<div id="UB"class ='btn_group'><img src="/img/j0.png" />개인 구매회원 </div>
+	<div id="UU"class ='btn_group'><img src="/img/j1.png" /></div>
+	<div id="BS" class ='btn_group' ><img src="/img/j2.png" /></div>
+	<div id="BU" class ='btn_group'><img src="/img/j3.png" /></div>
+	<<!-- div id="US" class ='btn_group'><img src="/img/j4.png" /></div> -->
+	<div id="GU" class ='btn_group'><img src="/img/j4.png" /></div>
+</div>
+<!-- <div id=" " style="width: 100%; height: auto;margin: 0 auto; margin-top: 5px; padding: 20px; margin-bottom: 30px;">
+	<div id="UU" class ='btn_group'>개인<br/> 구매 회원 <br/> 가입하기 </div>
+	<div id="BU" class ='btn_group'>사업자 <br/> 구매 회원 </div>
+	<div id="BS" class ='btn_group'>사업자 <br/> 셀러 회원 </div>
+ <div id="US" class ='btn_group'>개인 <br/> 셀러 회원 </div>
+	<div id="GU" class ='btn_group'>글로벌 <br/> 셀러 회원 </div> -->
+</div> -->
+<script>
+	$(function(){
+
+		$('#btn_group').on('click','.btn_group', function() {
+			var thisID = $(this).attr("id");
+
+			var tmpUrl ="";
+			if(thisID == "BU")
+				tmpUrl ="joinbizbuyer";
+			else if(thisID == "BS")
+				tmpUrl ="joinbizSaler";
+			else if(thisID == "US")
+				tmpUrl ="joinPersonSaler";
+			else if(thisID == "GU")
+				tmpUrl ="joinGlobalSaler";
+			else if(thisID == "UU")
+				tmpUrl ="personSeller";
+			else
+				tmpUrl ="join2";
+
+			$(location).attr('href', " /page.html?pageState="+tmpUrl+"&state="+thisID	);
+		});
+
+
+		$('.l-tab a').click(function(){
+			$(this).addClass('active').siblings().removeClass('active');
+			$('#login .cont > div').eq($(this).index()).show().siblings().hide();
+			return false;
+		})
+	})
+
+
+		</script>
+	</div>

@@ -1,0 +1,145 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="/m_cn/css/common.css">
+	<link rel="stylesheet" href="/m_cn/css/layout.css">
+	<link rel="stylesheet" href="/m_cn/css/style.css">
+	<script src="/m_cn/js/jquery-3.3.1.min.js"></script>
+	<script src="/m_cn/js/script.js"></script> 
+	<script src="/m_cn/js/jsfunc_omcwallet.js"></script> 
+	<script src="/m_cn/js/bignumber.min.js"></script> 
+	<script src="/m_cn/js/qrcode.min.js"></script> 
+	<title>OMC MAIN</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$("#gnb").load("gnb.html",{ USERID:"<?=USERID;?>" });   
+			$("#footer").load("foot_menu.html",{footer_state:"send"});     
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=USERWALLET;?>"; 
+			
+			
+			getMyWalletAddress("MyWalletAddressWrap",USERID ); 
+			//getBalance("getbalance",MyWalletAddress );
+
+			$("#btn_send_m").on('click',function(){  
+				$(location).attr('href',"send.html");
+			});
+
+			$("#btn_recv_m").on('click',function(){  
+				$(location).attr('href',"receive.html");
+			});
+
+
+			$("#btn_wallet_add").on('click',function(){  
+				$(location).attr('href',"makeWallet.html");
+			});
+
+
+			$("#btn_send_QRCODE").on('click', function(){  
+
+				let toEmail = $("#toEmail").val();
+				if(toEmail){
+					
+$(location).attr('href',"kakao.html");
+
+//					validateEmail(toEmail)
+//					alert("QR CODE 보내기");
+				
+				}else{
+					alert("請輸入您的電子郵件地址");
+					$("#toEmail").focus();
+					return false;
+				}
+
+			});
+
+			let WalletAddress = $("#WalletAddress").val();
+
+			$("#rvWalletAddress").val(WalletAddress);
+
+			var qrcode = new QRCode(document.getElementById("qrcode"), {
+				text: WalletAddress,
+				width: 128,
+				height: 128,
+				colorDark : "#000000",
+				colorLight : "#ffffff",
+				correctLevel : QRCode.CorrectLevel.H
+			});
+				 
+		});
+
+function validateEmail(email) {
+var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+return re.test(email);
+}
+
+	</script>
+
+</head>
+<body>
+	<div id="wrap" class="wrap-main">
+
+		<header id="header" class="header-main">
+			<h1 class="logo"><a href="#"><img src="../img/main/logo.png" alt="Oriental"></a></h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">打開所有菜單</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">注意</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"></div>
+		</header>
+
+		<div id="container" class="container container-main container-fm">		
+			<div class="main-info">
+				<p class="main-info__txt1"><?=USERID;?>Oriental coin OMC To 歡迎!</p>
+				<div class="main-info__amount">
+					<span id="getBalance" class="main-info__amount-num">0</span>
+				</div>
+				<ul class="main-info__btn">
+					<li class="main-info__btn-item"><button type="button" id="btn_send_m" class="main-info__btn-send">發送</button></li>
+					<li class="main-info__btn-item"><button type="button" id="btn_recv_m"  class="main-info__btn-receive">收到</button></li>
+				</ul>
+			</div>
+
+			<div class="inp-wrap__tit">我的二維碼</div>
+			<div class="inp-wrap">  
+				<input type="text"  id="rvWalletAddress" class="inp-txt full  "  readonly="readonly" style="border: none;">
+			</div> 
+			<div class="inp-wrap" >
+				<div id="qrcode" style="width: 150px; margin:0px auto; "></div>
+			</div> 
+			<div class="inp-wrap__tit">我的電子郵件</div>	
+			<div class="inp-wrap"> 
+				<input type="text"  id="myEmail" class="inp-txt full  "  value="<?=USERID;?>"  readonly="readonly">
+			</div> 
+			<div class="inp-wrap__tit">對方郵箱</div>	
+			<div class="inp-wrap"> 
+				<input type="text"  id="toEmail" class="inp-txt full  " placeholder="請輸入您的電子郵件地址 .">
+			</div> 
+
+			<div class="inp-wrap">
+				<button type="button" id="btn_send_QRCODE"  class="btn-confirm"> 發送 </button>
+			</div>
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"></footer>
+		<input type="hidden" id="WalletAddress" value="<?=$_GET['wallet'];?>">
+	</div>
+</body>
+</html>

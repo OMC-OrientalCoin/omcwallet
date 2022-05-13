@@ -1,0 +1,171 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		input{ width: 80%; padding: 4px; background-color: #DADADA; border:none; }
+
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+
+		.cell_inline{
+			display: inline-block;   
+		}
+
+		.orderState{
+			border-left: 2px solid #1e7aff; 
+			border-top: 2px solid #1e7aff; 
+			border-right:  2px solid #1e7aff; 
+			border-bottom: 1px solid #FFF; 
+
+			background-color: #FFF;
+		}
+		
+		.orderDefault{
+			border-left: 1px solid #DADADA; 
+			border-top: 1px solid #DADADA;
+			border-right:  1px solid #DADADA;
+			border-bottom: 1px solid #DADADA; 
+			
+			background-color: #DADADA;
+		}
+
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$("#top").load("top_bar.html",{ pageTitle: "코인 요청" }); 
+
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=WALLET;?>";
+
+			orderListFunc("list","M",USERID);
+
+
+			$('#userID').html(USERID); 
+			$('#MyWalletAddress').html(MyWalletAddress); 
+
+
+			$("#order").on('click',".order", function (e) 
+			{    
+				var state = $(this).attr("id");
+				orderListFunc("list",state,USERID)
+
+			});//btn_order 
+
+ 
+
+			$("#btn_order").on('click', function (e) 
+			{   
+			//회원가입 
+			$(location).attr('href',"m_order_coin.html");
+
+	  		});// $("#btn_genWallet").on('click', function (e) 
+
+
+
+ 		});//jquery 
+
+
+
+
+		function orderListFunc(divID,state,userID)
+		{  
+//console.log("orderListFunc ",divID+" | "+state+" | "+userID)	
+			var jURL ="/m/module/get_order.php";
+			var  params = {state:state,userID:userID}; 
+
+
+			var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					dataType: 'jsonp',
+					jsonpCallback: "myCallback",
+					async: false
+				}).responseText;
+
+				 
+
+					var obj = $.parseJSON(returnValue);
+ 			
+				 	var tempForm = "";
+					var tempID = "";
+					 tempForm += "<div  class='order_action'>";
+						tempForm += "	<div  class='cell_inline'>날짜</div>";
+						tempForm += "	<div  class='cell_inline'>아이디</div>";
+						tempForm += "	<div  class='cell_inline'>수량</div>";                         
+						tempForm += "</div>";
+
+					for(var i in obj)
+					{
+						if(state == "M")
+							tempID = obj[i].orderID;
+						else if(state == "Y")
+							tempID = obj[i].requestID;
+ 
+						tempForm += "<div id='order_"+i+"' class='order_action'>";
+						tempForm += "	<div  class='cell_inline' style='width: 34%;'>"+obj[i].reqDate+"</div>";
+						tempForm += "	<div  class='cell_inline' style='width: 30%;'>"+tempID+"</div>";
+						tempForm += "	<div  class='cell_inline' style='width: 30%;'>"+obj[i].requestValue+"</div>";                         
+						tempForm += "</div>";
+
+					}
+
+ 
+					$('#'+divID).html(tempForm); 
+
+				 
+		}//orderListFunc
+
+	</script>
+
+</head>
+<body>
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "></div>
+
+
+	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+	<div id="btn_order" style="width:  100px; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 8px 0px; text-align: center;">
+		요청하기
+	</div>
+
+	<div id="order" class="content_wrap" style="width: 100%;height: 30px; padding: 3%;" >
+		<div id="M" class="order content_wrap orderState" style="width: 48%;height: 30px; display: inline-block; border: 1px solid #DADADA; text-align: center; line-height: 30px; background-color: #FFF;" > 요청</div>
+		<div id="Y" class="order content_wrap" style="width: 48%; height: 30px;  display: inline-block;border: 1px solid #DADADA; text-align: center; line-height: 30px; background-color: #eaeaea;" > 송금 </div>
+	</div>
+	<div id="list" class="content_wrap" style="width: 100%;height: 80%; padding: 3%;" ></div>
+</body>
+</html>
+

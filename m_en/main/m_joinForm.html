@@ -1,0 +1,171 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function () {
+
+			$('#btn-home').on('click', function () {
+				$(location).attr('href', "/m_en/main/index.html");
+			});
+
+			$("#btn_join").on('click', function (e) {
+				e.preventDefault();
+
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+				let passwd_comp = $('#passwd_comp').val();
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val();
+				let userNation = $("#userNation option:selected").val();
+
+				if (!userID) { alert("Please enter your ID. "); $('#userID').focus(); return false; }
+				else if (!userPassword) { alert("Please enter a password. "); $('#userPassword').focus(); return false; }
+				else if (!passwd_comp) { alert("Please enter confirm password. "); $('#passwd_comp').focus(); return false; }
+				else if (userPassword != passwd_comp) { alert("Password and password confirmation are different. Please enter. "); $('#passwd_comp').val(""); $('#passwd_comp').focus(); return false; }
+				else if (!userName) { alert("Please enter your full name. "); $('#userName').focus(); return false; }
+				else if (!userEMAIL) { alert("Please enter EMAIL. "); $('#userEMAIL').focus(); return false; }
+				else {
+
+					let data = $("#joinForm").serialize();
+					let retValue = recMember(data);
+
+					if (retValue > 0) {
+						alert("You are registered.");
+						$(location).attr('href', "/m_en/main/index.html");
+
+					}
+					else
+						alert("registration failed" + e);
+				}
+
+				//else if (!userPhone) { alert("연락를 입력해 주세요. "); $('#userPhone').focus(); return false; }
+				//else if (!userNation) { alert("국가를 입력해 주세요. "); $('#userNation').focus(); return false; }
+
+			});// btn_join s
+
+			function recMember(params) {
+
+				let jURL = "/m_en/module/set_member_rec.php";
+				let data = 0;
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				console.log("login -->", returnValue)
+
+				data = parseInt(returnValue);
+
+				return data;
+
+
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">Sign Up</h1>
+			<button type="button" id="btn-home" class="btn-home"
+				style="font-size: 18px;font-weight: bold; line-height: 30px; color: #FFF;text-align: center; margin-top: 10px; margin-left: 20px;">
+				< </button>
+					<button type="button" class="btn-notice">
+						<span class="blind">Notice</span>
+						<span class="btn-notice__count">9</span>
+					</button>
+					<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+
+			<form name="joinForm" id="joinForm" method="post">
+				<input type="hidden" id="chkID_state" name="chkID_state" />
+
+				<div id="" class="inp-txt full"
+					style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin: 20px 0px;">
+					registration information <br />
+					Enter 5 or more characters for ID<br />
+					For password, enter at least 5 English numbers 
+					and special characters
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userID" name="userID" class="inp-txt full" placeholder="ID (5 characters or more)">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="password" id="userPassword" name="userPassword" class="inp-txt full"
+						placeholder="password">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="password" id="passwd_comp" name="passwd_comp" class="inp-txt full"
+						placeholder="verify password">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="text" id="userName" name="userName" class="inp-txt full" placeholder="Name">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userPhone" name="userPhone" class="inp-txt full" placeholder="Phone Number">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userEMAIL" name="userEMAIL" class="inp-txt full" placeholder="E-MAIL">
+				</div>
+
+
+				<div class="inp-wrap">
+					<select id="userNation" name="userNation" class="inp-txt full">
+						<option  value="" >:::NATION SELECTION :::</option>
+					<option value="kr">Korea</option>
+					<option value="Cn">China</option>
+					<option value="jp">Japan</option>
+					<option value="vn">Vietnam</option>
+					<option value="pp">Philippines</option>
+					</select>
+
+				</div>
+
+				<div class="btn-wrap" style="margin-top: 30px;">
+					<button type="button" id="btn_join" class="btn-confirm"> Join </button>
+				</div>
+
+			</form>
+
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+
+</html>

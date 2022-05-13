@@ -1,0 +1,164 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="/m_cn/css/common.css">
+	<link rel="stylesheet" href="/m_cn/css/layout.css">
+	<link rel="stylesheet" href="/m_cn/css/style.css">
+	<script src="/m_cn/js/jquery-3.3.1.min.js"></script>
+	<script src="/m_cn/js/script.js"></script> 
+	<script src="/m_cn/js/jsfunc_omcwallet.js" type="text/javascript"></script> 
+	<script src="/m_cn/js/bignumber.min.js" type="text/javascript"></script> 
+	<!-- <script src="./web3.min.js" type="text/javascript" ></script> -->
+	<title>OMC MAIN</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$("#gnb").load("gnb.html",{ USERID:"<?=USERID;?>" });   
+			$("#footer").load("foot_menu.html",{footer_state:"home"});   
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=USERWALLET;?>"; 
+			
+			
+			getMyWalletAddress("MyWalletAddressWrap",USERID ); 
+			//getBalance("getbalance",MyWalletAddress );
+
+			$("#btn_send_m").on('click',function(){  
+				$(location).attr('href',"send.html");
+			});
+
+			$("#btn_recv_m").on('click',function(){  
+				$(location).attr('href',"receive.html?WalletAddress="+MyWalletAddress);
+			});
+
+
+			$("#btn_wallet_add2").on('click',function(){  
+				$(location).attr('href',"makeWallet.html");
+			});
+
+
+			$("#MyWalletAddressWrap").on('click','.cell',function(){  
+				let thisID = $(this).attr('id');
+				let state  = thisID.split("_")[0];
+				let tmpAddr  = thisID.split("_")[1];
+				let tmpIDX  = thisID.split("_")[2];
+
+				let tmpBalance = 0;
+				switch (state){
+					case "w" : msg = "錢包信息"; break;
+					case "d" : 
+					tmpBalance = parseInt($("#b_"+tmpIDX).text());
+
+					if(tmpBalance>0)
+					{
+
+						var con_test = confirm("我有一個平衡. 我要刪除嗎?");
+						if(con_test == true){
+							del_walletFunc(tmpAddr); 
+						}
+						else if(con_test == false){
+							return false;
+						} 
+					}
+					else{
+						del_walletFunc(tmpAddr,USERID); 
+					}
+
+
+					break;
+					case "q" : $(location).attr('href',"myQRCode.html?wallet="+tmpAddr);break;
+				}
+
+
+			});
+		});
+
+		function del_walletFunc(wallet,USERID)
+		{
+			if(wallet)
+			{
+				var confirmState = confirm("你確定你要刪除?");
+				if(confirmState == true){ 
+					var jURL   = "/m_cn/module/del_MyWalletAddress.php";
+					var params = { wallet:wallet};  
+
+					$.post( jURL, params).done(function( data ) {
+						console.log("data",data)
+						alert( "錢包已被刪除. ");
+						 location.reload();
+
+					}); 
+
+				// }else if(confirmState == false){
+				// 	 return false;
+				}
+
+				 return false;
+			}else{
+
+				alert( "請檢查您的錢包地址. ");
+				return false;
+
+			}
+		}
+	</script>
+
+</head>
+<body>
+	<div id="wrap" class="wrap-main">
+
+		<header id="header" class="header-main">
+			<h1 class="logo"><a href="#"><img src="../img/main/logo.png" alt="Oriental"></a></h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">打開所有菜單</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">注意</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"></div>
+		</header>
+
+		<div id="container" class="container container-main container-fm">		
+			<div class="main-info">
+				<div class="main-info__txt1" style="font-size:16px;"><?=USERID;?> 先生</div>
+				<div class="main-info__txt1" style="margin-top: 5px;font-size:14px;">Oriental coin OMC To 歡迎!</div>
+				<div class="main-info__amount" >
+					<span id="getBalance" class="main-info__amount-num" style="width: 80%; overflow: hidden; text-overflow:ellipsis; white-space:nowrap;font-size:20px; ">0</span>
+				</div>
+				<ul class="main-info__btn">
+					<li class="main-info__btn-item"><button type="button" id="btn_send_m" class="main-info__btn-send">發送</button></li>
+					<li class="main-info__btn-item"><button type="button" id="btn_recv_m"  class="main-info__btn-receive">收到</button></li>
+				</ul>
+				<div class="" style="padding-left: 20px; margin-top: 20px; min-height: 5px;">&nbsp;</div>
+			</div>
+			 
+			<div class="your-acc" style="padding-left: 20px; ">
+				<h1 class="your-acc__tit">ACCOUNT</h1>
+			</div> 
+			<div id="MyWalletAddressWrap" class="your-acc"> </div>
+
+			<div class="main-add">
+				<button type="button" id="btn_wallet_add2" class="main-add__btn">
+					<span class="blind">添加</span>
+				</button>
+			</div>
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"></footer>
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<script src="../js/bignumber.js"></script>
+	<script src="../js/ethCalc.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+			let USERID = "<?=USERID;?>";
+			$("#gnb").load("gnb.html",{ USERID:USERID });   
+			$("#footer").load("foot_menu.html",{footer_state:"transaction"});       
+
+			$("#transaction_list").on('click','.tranX',function(){  
+				let thisID = $(this).attr('id'); 
+				$(location).attr('href',"transaction_data.html?tx="+thisID);
+			});
+
+			omc_getTransaction("transaction_list",USERID);
+
+		});
+
+		function omc_getTransaction(divID,USERID)
+		{ 
+		 
+			var params = "";//{ page:page};   
+			var retData = "";  
+
+
+		var jURL   = "/m_en/module/omc_get_transaction.php";
+			var params = { userID:USERID};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			console.log("omc_getTransaction ", returnValue)
+			var obj = $.parseJSON(returnValue);  
+
+ 
+let tmpForm = ""; 
+			for(var i in obj) 
+			{ 
+				/*console.log("transaction_hashobj[i] -->", obj[i].transaction_hash);
+				retData = eth_getTransactionByBlockHash(obj[i].transaction_hash, obj[i].regDate)
+
+				$("#"+divID).append(retData)*/
+
+				if(obj[i].orderID != null)
+				{
+					
+					value =  parseInt(obj[i].requestValue,16);
+ 					value =  value  / 1000000000000000000;
+
+ 					
+					tmpForm += "<div id='"+obj[i].idx+"' class='inp-wrap tranX' style='width: 95%; display: block; margin-bottom: 10px ; padding:7px; border:1px solid #DADADA; color:#575757; '>"; 
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;margin-bottom:10px;'>"; 
+					tmpForm += "<div   style='width: 54%; height:auto; display: block;  border:none; text-align:left; padding:3px;font-size:16px; font-weight:bold;color:#1e7aff;display: inline-block;'><img src='/m_en/imgs/icon_chain.png' width='16'/> &nbsp;&nbsp; "+addCommas(value)+" </div>";
+					tmpForm += "<div   style='width: 40%; height:auto; display: block; border:none; text-align:right; margin: 3px 0px;margin-bottom:10px; display: inline-block;'>"+obj[i].recDate+"</div>";
+					tmpForm += " </div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;'><img src='/m_en/imgs/icon_send.png' width='16'/>"+obj[i].requestWallet+"</div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left;  margin: 3px 0px;'><img src='/m_en/imgs/icon_receive.png'  width='15'/>"+value+"</div>";
+					
+					tmpForm += " </div>";
+				}
+
+
+
+			}
+
+$("#"+divID).html(tmpForm);
+		}//omc_getTransaction
+
+
+function eth_getTransactionByBlockHash(hash,regDate)
+		{    
+
+			var jURL   = "/m_en/module/omc_get_transaction.php";
+			var params = {hash:hash};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText; 
+
+			console.log("  BlockHash returnValue-->", returnValue)
+			var obj = $.parseJSON(returnValue);  
+			let tmpForm = ""; 
+			let value = "";
+ 
+
+				if(obj.result != null)
+				{
+					value = obj.result.value;//
+					
+					value = value.substring(2,value.length);
+					value =  parseInt(obj.result.value,16);
+ 					value =  value  / 1000000000000000000;
+
+ 					
+					tmpForm += "<div id='"+hash+"' class='inp-wrap tranX' style='width: 95%; display: block; margin-bottom: 10px ; padding:7px; border:1px solid #DADADA; color:#575757; '>"; 
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;margin-bottom:10px;'>"; 
+					tmpForm += "<div   style='width: 54%; height:auto; display: block;  border:none; text-align:left; padding:3px;font-size:16px; font-weight:bold;color:#1e7aff;display: inline-block;'><img src='/m_en/imgs/icon_chain.png' width='16'/> &nbsp;&nbsp; "+addCommas(value)+" </div>";
+					tmpForm += "<div   style='width: 40%; height:auto; display: block; border:none; text-align:right; margin: 3px 0px;margin-bottom:10px; display: inline-block;'>"+ regDate+"</div>";
+					tmpForm += " </div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;'><img src='/m_en/imgs/icon_send.png' width='16'/>"+obj.result.from+"</div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left;  margin: 3px 0px;'><img src='/m_en/imgs/icon_receive.png'  width='15'/>"+obj.result.to+"</div>";
+					
+					tmpForm += " </div>";
+				}
+				return  tmpForm; 
+
+			}
+
+
+
+
+		function eth_getTransactionByBlockHash1111(hash,regDate)
+		{    
+
+			var jURL   = "/m_en/module/eth_getTransactionByHash.php";
+			var params = {hash:hash};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText; 
+
+			console.log("  BlockHash returnValue-->", returnValue)
+			var obj = $.parseJSON(returnValue);  
+			let tmpForm = ""; 
+			let value = "";
+ 
+
+				if(obj.result != null)
+				{
+					value = obj.result.value;//
+					
+					value = value.substring(2,value.length);
+					value =  parseInt(obj.result.value,16);
+ 					value =  value  / 1000000000000000000;
+
+ 					
+					tmpForm += "<div id='"+hash+"' class='inp-wrap tranX' style='width: 95%; display: block; margin-bottom: 10px ; padding:7px; border:1px solid #DADADA; color:#575757; '>"; 
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;margin-bottom:10px;'>"; 
+					tmpForm += "<div   style='width: 54%; height:auto; display: block;  border:none; text-align:left; padding:3px;font-size:16px; font-weight:bold;color:#1e7aff;display: inline-block;'><img src='/m_en/imgs/icon_chain.png' width='16'/> &nbsp;&nbsp; "+addCommas(value)+" </div>";
+					tmpForm += "<div   style='width: 40%; height:auto; display: block; border:none; text-align:right; margin: 3px 0px;margin-bottom:10px; display: inline-block;'>"+ regDate+"</div>";
+					tmpForm += " </div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left; margin: 3px 0px;'><img src='/m_en/imgs/icon_send.png' width='16'/>"+obj.result.from+"</div>";
+					tmpForm += "<div class='inp-txt  ' style='width: 95%; height:auto; display: block; border:none; text-align:left;  margin: 3px 0px;'><img src='/m_en/imgs/icon_receive.png'  width='15'/>"+obj.result.to+"</div>";
+					
+					tmpForm += " </div>";
+				}
+				return  tmpForm; 
+
+			}
+
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+			}
+
+		</script>
+	</head>
+	<body>
+		<div id="wrap" class="wrap">
+
+			<header id="header" class="header-sub">
+				<h1 class="header-sub__tit">Transaction</h1>
+				<button type="button" class="btn-all-menu">
+					<span class="blind">Open Menu</span>
+				</button>
+				<button type="button" class="btn-notice">
+					<span class="blind">Notice</span>
+					<span class="btn-notice__count">9</span>
+				</button>
+				<div id="gnb" class="gnb"></div>
+			</header>
+
+			<div id="container" class="container container-sub" style="border: none;">	 
+				<div class="coin-send" style="border: none; ">
+					<div class="inp-wrap__tit">&nbsp;</div>	
+					<div  id="transaction_list" class=" " style="font-weight: bold; width: 100%; height:530px; border: none; overflow-y: scroll;   ">  </div> 
+				</div> 
+			</div> 
+			<footer id="footer" class="footer"></footer>
+
+		</div>
+	</body>
+	</html>

@@ -1,0 +1,97 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		input{ width: 80%; padding: 4px; background-color: #DADADA; border:none; }
+
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#top").load("top_bar.html",{ pageTitle: "비밀번호 등록" }); 
+
+ 		});//jquery 
+
+
+
+ 	</script>
+
+ </head>
+ <body>
+ 	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "></div>
+
+ 	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+
+
+ 	<div id="" class="content_wrap" style="width: 90%;height: 80%; padding: 3%;" >
+<form name="joinForm" id="joinForm" method="post" action="module/set_member_rec.php">
+			<div id="" class="content_wrap"> 
+
+				 <div id="" class="content_body">
+					<div id="" class="cellLabel ">비밀번호</div>
+					<div id="" class="cellField">
+						<input type="password" id="userPassword" name="userPassword"  class="inputField"  />
+					</div>
+				</div> 
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel">비밀번호확인</div>
+					<div id="" class="cellField"><input type="password" id="passwd_comp" name="passwd_comp"  class="inputField" /></div>
+				</div>
+
+				<div id="" class="content_body">
+					<div id="" class="cellLabel"> </div>
+					<div id="" class="cellField">
+						영문자 숫자 특수문자 사용 20자 이내
+					</div>
+				</div>
+				
+				<div id="" class="content_body  " style="text-align: center;margin-top: 20px;">
+					찾기를 누르시면 등록된 이메일 조회 후 이메일로 인증번호를 전송합니다.
+				</div>
+
+			 
+<div id="btn_action" style="width:  90%; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 8px 0px; text-align: center;">
+	 		등록
+	 	</div>
+				
+			</form>
+ 		 
+
+ 		</div>
+ 	</body>
+ 	</html>
+
+ 

@@ -1,0 +1,615 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<script src='/m/js/bignumber.js' type="text/javascript" ></script>
+	<script src="/m/js/jsQR.js" type="text/javascript" ></script>
+	<script src='/m/js/errMessage.js' type="text/javascript" ></script>
+	
+	<title>Send</title>
+	<script type="text/javascript">
+		$(function()
+		{   
+			$("#gnb").load("gnb.html",{ USERID:"<?=USERID;?>" });   
+			$("#footer").load("foot_menu.html",{footer_state:"send"});    
+
+			let USERID = "<?=USERID;?>";
+			
+	 
+			getMyWalletAddress("MyWalletAddress",USERID ); 
+
+
+			$("#MyWalletAddress").on('change',function()
+			{
+				var thisVal = $(this).val();
+				getBalance("myBalance",thisVal);  
+			});
+
+			$("#btn_all").on('click',function()
+			{ 
+				let myBalance = $("#myBalance").val(); 
+				let selWallet = $("#MyWalletAddress option:selected").val();
+
+				if(!selWallet)
+				{
+					alert("지갑을 선택 해 주세요.")
+					return false;
+
+				}else if(myBalance <= 0)
+				{
+					alert("잔고가 0 입니다. ")
+					return false;
+
+				}else{
+					$("#send_value").val($("#myBalance").val())
+				}
+
+			});
+
+			$("#btn_send").on('click',function()
+			{
+				let myBalance 	 	= $("#myBalance").val();
+					myBalance 	 	= replaceComma(myBalance);
+				let sendAmount 	 	= $("#send_value").val();
+					sendAmount 	 	= replaceComma(sendAmount);
+				let senderWellet   	= $("#MyWalletAddress option:selected").val();
+				let receiverWellet 	= $("#receptWallet").val();
+				let walletPassword 	= $("#wallet_password").val();
+
+ 						 //var dec = parseInt(hex, 16); // === "123"
+
+ 						 let ba = parseInt(myBalance, 16);
+ 						 let bb = parseInt(sendAmount, 16);
+ 						 
+ 						 if(!senderWellet)
+ 						 {
+ 						 	alert("지갑을 선택 해 주세요.");
+ 						 	$("#MyWalletAddress").focus();
+ 						 	return false;
+
+ 						 }else if(!receiverWellet) {
+
+ 						 	alert("보낼 지갑 주소를 입력해 주세요. ");
+ 						 	$("#receptWallet").focus();
+ 						 	return false; 
+
+ 						 }else if(!walletPassword) {
+
+ 						 	alert("지갑 비밀번호를 입력해 주세요. ");
+ 						 	$("#wallet_password").focus();
+ 						 	return false; 
+
+ 						 }else if(myBalance <= 0) {
+
+ 						 	alert("잔고가 0 입니다. ")
+ 						 	return false;
+
+ 						 }else if( ba  < bb ){
+
+ 						 	alert("잔고가 부족합니다..\n ");
+ 						 	return false;
+
+ 						 }else{
+ 						 	sendTransation(USERID , senderWellet, walletPassword, receiverWellet, sendAmount);
+ 						 }
+
+
+ 						})
+
+
+			$('#btn_receptWallet').on('click', function(){ 
+				$("#QR_SCAN_wrap").show();
+				return false;  
+			}); //btn_receptWallet
+
+			$('#btn_close').on('click', function(){
+
+				let QRAddr = $("#outputData").html();
+				
+				if(QRAddr)
+					$("#receptWallet").val(QRAddr);  
+
+				$("#QR_SCAN_wrap").hide();  
+			});//btn_close
+
+
+ 			$('#cb_view').on('click', function(){ 
+				let tmpValue = "";
+				 
+	/*			if(!$.trim(tmpValue))
+				{
+					alert("비밀번호를 입력하세요.");
+					return false;
+				}
+*/
+				$(".viewstate").hide();
+				if($("#cb_view").is(":checked")){
+					//alert("체크박스 체크했음!");
+					tmpValue = $.trim($("#wallet_password").val()); 
+					$("#state_pw_txt").show();
+					$("#wallet_password_txt").val(tmpValue);
+					
+		        }else{
+					//alert("체크박스 체크 해제!");
+
+					tmpValue = $.trim($("#wallet_password_txt").val()); 
+					$("#state_pw").show();
+					$("#wallet_password").val(tmpValue);
+		        }
+
+
+			});//btn_close
+
+		}); //jquery
+
+ 
+		function sendTransation(userID, from,walletPassword,toAddr,value)
+		{
+
+			let isUnLockState 	= false;
+			let isLockState 	= false;
+			let isSendState 	= false;
+
+
+			let OMCState = toAddr.substring(0,1);
+			let to = "";
+			if(OMCState=="O")
+				to = toAddr.substring(4,toAddr.length);
+			else
+				to = toAddr;
+			
+			isUnLockState = unlock(from,walletPassword);
+			 
+
+			console.log("isUnLockState -->", "|isLockState "+isUnLockState +" |to  "+to )
+
+ 			if(isUnLockState)
+			{
+ 
+		 		var jURL   = "/m/module/omc_send.php"; 
+		 		value =  value  * 1000000000000000000;
+				var sendAmount_Hex = "0x"+value.toString(16); // === "7b" 
+				console.log("value",  sendAmount_Hex);
+
+				var params = { from:from,to:to,value:sendAmount_Hex};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText; 
+
+				var obj = $.parseJSON(returnValue);   
+
+				isSendState = returnMSG(obj);
+
+				console.log("isSendState omc_send 송금-->",userID+"|"+returnValue+" |isSendState "+isSendState); 
+ 
+				if(obj.result )
+				{
+					let tx_hash = obj.result;
+					 console.log("송금 -->",returnValue+"|"+tx_hash);
+					let retState = 1;//sendTx(tx_hash); 
+
+					
+					if(retState> 0 )
+					{
+						var jURL2   = "/m/module/set_omc_order.php"; 
+						var params2 = { userID:userID,from:from,to:to,value:sendAmount_Hex};   
+						console.log("isSendState omc_send 송금 222222-->",userID+"|from "+from+" |to "+to+" |value "+sendAmount_Hex); 
+						var returnValue2 = $.ajax({
+							type: "POST",
+							url: jURL2,
+							data: params2,
+							async: false
+						}).responseText; 
+
+						alert("송금되었습니다.");
+
+
+
+
+					}
+
+					$(location).attr('href',"main.html");
+
+				}else{
+
+					alert(obj.error );
+					
+				}//
+ 
+			 	isLockState = lock(from);
+
+			} 
+
+			return false;
+		}
+
+		function sendTx(tx_hash)
+		{  
+			var jURL   =  "/m/module/omc_set_transaction.php";
+			var params = { tx_hash:tx_hash};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			 console.log("set_transaction_omc  -->",tx_hash+" | "+returnValue) ;
+			var obj = $.parseJSON(returnValue);   
+
+			return tx_hash;//obj.result; 
+		}
+
+		function unlock( address,passphrase)
+		{  
+
+			let retState =false;
+			var jURL   = "/m/module/omc_unlock.php";
+			var params = {  address:address,passphrase:passphrase};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText; 
+
+			console.log("unlock returnValue :",  returnValue   );
+
+			var obj = $.parseJSON(returnValue);    
+
+			retState = returnMSG(obj);
+			console.log("unlock state  ---> ",retState) 
+
+			return retState;
+
+		} 
+
+		function lock(address)
+		{  
+			let retState = "";
+
+			var jURL   = "/m/module/omc_lock.php";
+			var params = {  address:address};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText; 
+
+			console.log("unlock returnValue :",  returnValue   );
+
+			var obj = $.parseJSON(returnValue);    
+
+			retState = returnMSG(obj);
+			console.log("lock state  ---> ",retState) 
+
+			return retState;
+
+		} 
+
+		function returnMSG(obj)
+		{  
+ 			let errMSG ="";
+
+			if(typeof obj.result == "undefined" || obj.result == null || obj.result == "")
+			{
+			//console.log("returnMSG false :",  obj.error.message  ); 
+				errMSG =  errMSGFunc(obj.error.code); 
+				return false; 
+			
+			}else{
+				//console.log("unlock true :",   obj.result  );
+				return true ;
+			}
+
+		}  
+
+
+
+		function getMyWalletAddress(divID,userID )
+		{  
+			var jURL   = "/m/module/get_MyWalletAddress.php";
+			var params = { userID:userID};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			console.log("getMyWalletAddress ", returnValue)
+			var obj = $.parseJSON(returnValue);  
+
+			var tmpList = "";
+
+			$("#"+divID).html("")
+
+			tmpList += "<option value=''> ::: 선택 ::: </option>"; 
+			for(var i=0;i<obj.length;i++)
+			{  
+				tmpList += "<option value='" + obj[i].walletAddress   +"'>" + obj[i].walletAddress   +"</option>"; 
+			}
+
+			$("#"+divID).html(tmpList);
+
+		}
+
+
+		function getBalance(divID,address )
+		{  
+			var jURL   = "/m/module/eth_getBalance.php";
+			var params = { address:address};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+
+			var obj = $.parseJSON(returnValue);  
+			/* var balance = parseInt(obj.result, 16);   
+			$("#"+divID).html(obj.result);*/
+			var balance =  obj.result ; 
+
+			if(balance)
+			{
+				// value =  value.substring(2, value.length);
+				// value =parseInt(value,16);
+				// //value = new BigNumber(value);
+				// //value = addCommas(value);
+				// value = value.toPrecision(40)
+
+
+ balance =  balance  / 1000000000000000000;
+		balance = addCommas(balance);
+
+			/*	let  x =  new BigNumber(balance) 
+				var z =  x.toString(10); 
+				console.log("getBalance ",divID + " "+ z)*/
+
+			}else{
+				balance = 0;
+			}
+
+			//value = Math.floor(value); 
+
+			$("#"+divID).val(addCommas(balance));
+
+		}//getBalance()
+
+
+
+		function addCommas(x) {
+			x = x?x:0;
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+		}
+
+		function replaceComma(pStr) { 
+			var strCheck = /\,/g; 
+			pStr = pStr.replace(strCheck, ''); 
+			return pStr; 
+		} 
+
+		window.addEventListener("DOMContentLoaded", function() {
+
+			var video = document.createElement("video");    
+			var canvasElement = document.getElementById("canvas");
+			var canvas = canvasElement.getContext("2d");
+			var loadingMessage = document.getElementById("loadingMessage");
+			var outputContainer = document.getElementById("output");
+			var outputMessage = document.getElementById("outputMessage");
+			var outputData = document.getElementById("outputData");
+
+			function drawLine(begin, end, color) {
+
+				canvas.beginPath();
+				canvas.moveTo(begin.x, begin.y);
+				canvas.lineTo(end.x, end.y);
+				canvas.lineWidth = 4;
+				canvas.strokeStyle = color;
+				canvas.stroke();
+			}//drawLine
+
+        // 카메라 사용시
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+
+        	video.srcObject = stream;
+                  video.setAttribute("playsinline", true);      // iOS 사용시 전체 화면을 사용하지 않음을 전달
+                  video.play();
+                  requestAnimationFrame(tick);
+              });
+
+        function tick() 
+        {
+        	let tmpAddrCrapState = false; //
+        	loadingMessage.innerText = "⌛ 스캔 기능을 활성화 중입니다."
+
+        	if(video.readyState === video.HAVE_ENOUGH_DATA) {
+
+        		loadingMessage.hidden = true;
+        		canvasElement.hidden = false;
+        		outputContainer.hidden = false;
+
+				// 읽어들이는 비디오 화면의 크기
+				canvasElement.height = 400;//video.videoHeight;
+				canvasElement.width = 600;//video.videoWidth;
+
+				canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+				var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+
+				var code = jsQR(imageData.data, imageData.width, imageData.height, {
+					inversionAttempts : "dontInvert",
+				});
+
+				// QR코드 인식에 성공한 경우
+				if(code) {
+
+					// 인식한 QR코드의 영역을 감싸는 사용자에게 보여지는 테두리 생성
+					drawLine(code.location.topLeftCorner, code.location.topRightCorner, "#FF0000");
+					drawLine(code.location.topRightCorner, code.location.bottomRightCorner, "#FF0000");
+					drawLine(code.location.bottomRightCorner, code.location.bottomLeftCorner, "#FF0000");
+					drawLine(code.location.bottomLeftCorner, code.location.topLeftCorner, "#FF0000");
+
+					outputMessage.hidden = true;
+					outputData.parentElement.hidden = false;
+
+					// QR코드 메시지 출력 
+
+					tmpAddrCrapState = compareWalletAddress(code.data);
+					if(tmpAddrCrapState){
+						outputData.innerHTML = " QRCODE 확인되었습니다. ";
+						$("#outputData").show();
+						$("#outputData").html(code.data);	
+						$("#btn_close").text(" QRCODE 확인 ");
+
+						return false;
+					}else{
+						
+					}
+
+					// return을 써서 함수를 빠져나가면 QR코드 프로그램이 종료된다.
+					// return;
+				}else{
+					// QR코드 인식에 실패한 경우 
+					outputMessage.hidden = false;
+					outputData.parentElement.hidden = true;
+				}
+			} 
+			requestAnimationFrame(tick);
+		}
+	});
+
+		function compareWalletAddress(addr)
+		{
+			let tmpValue = addr.substring(0,6);
+
+			//console.log(addr +"|"+ tmpValue)
+
+			if(tmpValue == "0x")
+				return true;
+			else
+				return false;
+
+		}
+
+	</script>
+
+
+</head>
+<body>
+
+	<div id="QR_SCAN_wrap" style="display: none; width: 100%; height: 100%; background-color: #DADADA; z-index: 999; top:50px; position: absolute;">
+		<div id="QR_SCAN" style="width: 60%;height: 10%; margin: 0px auto; padding-top: 20px;">
+			<div id="output">
+				<div id="outputMessage">
+					QR코드를 카메라에 노출시켜 주세요
+				</div> 
+			</div>
+		</div>
+
+		<div id="frame" style="width: 50%;height: 34%; margin: 0px auto; overflow : hidden;  ">
+			<div id="loadingMessage">
+				🎥 비디오 스트림에 액세스 할 수 없습니다<br/>웹캠이 활성화되어 있는지 확인하십시오
+			</div>
+			<canvas id="canvas"></canvas>
+		</div>
+		<div id="outputData" hidden style="width: 70%;margin:5px auto;"></div>
+		<div class="inp-wrap">
+			<button type="button" id="btn_close"  class="btn-confirm"  style="width: 70%; margin: 30px auto; " > 닫기 </button>
+		</div>
+	</div>
+
+
+	<div id="wrap" class="wrap" >
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">코인전송</h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">전체메뉴열기</span>
+			</button>
+		<button type="button" id="btn_nation" class="btn-notice">
+				<span class="blind">choice Nation</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub" style="height:530px;  overflow-y: scroll; ">		
+			<div class="coin-send">
+
+				<div class="inp-wrap__tit">내 지갑주소</div>	
+				<div class="inp-wrap">
+					<select id="MyWalletAddress" class="inp-txt full" ></select>
+				</div>
+
+				<div class="inp-wrap__tit">보유수량</div>	
+				<div class="inp-wrap"> 
+					<input type="text"  id="myBalance" class="inp-txt full  " placeholder="지갑주소를 선택하세요 ." readonly="readonly">
+				</div> 
+				<div class="inp-wrap__tit">보낼 곳 지갑주소</div>	
+				<div class="inp-wrap">
+					<input type="text"  id="receptWallet"  class="inp-txt    " style="width: 88%;" placeholder="받는 지갑주소를 정확히 입력해 주세요.">
+					<input type="text"  id="btn_receptWallet"  class="inp-txt receive" style="width: 10%;margin-left: 4px; padding:3px; " readonly="readonly">
+				</div>
+				<p class="point-txt">받는 지갑주소를 정확히 입력해 주시기 바랍니다.</p>
+				<div class="inp-wrap__tit">수량</div>	
+				<div class="inp-wrap">
+					<input type="text" id="send_value" class="inp-txt full" placeholder="전송 수량을 입력하세요.">
+					<button type="button" id="btn_all" class="inp-wrap__btn-max">최대 수량</button>
+				</div>
+
+				<!-- <div class="inp-wrap__tit">gas</div>	
+				<div class="inp-wrap">
+					<input type="text" id="gas_value" class="inp-txt full" placeholder="가스비용을 입력하세요.">
+					<input type="text" id="send_value" class="inp-txt full" placeholder="전송 수량을 입력하세요.">
+					<button type="button" id="btn_all" class="inp-wrap__btn-max">최대 수량</button>
+				</div>
+			-->
+
+			<div class="inp-wrap__tit">지갑비밀번호</div>	
+			<div id="state_pw" class="inp-wrap viewstate" style="margin-bottom: 5px;">
+				<input type="password" id="wallet_password" class="inp-txt full "  style="font-size: 16px;" placeholder="지갑전용 비밀번호를 입력하세요." />
+			</div>
+			<div id="state_pw_txt" class="inp-wrap viewstate" style="display: none;margin-bottom: 5px;">
+				<input type="text" id="wallet_password_txt" class="inp-txt full "  style="font-size: 16px;" placeholder="지갑전용 비밀번호를 입력하세요." />
+			</div>
+			<div class="inp-wrap" style=" display:block; margin-bottom: 25px; ">
+				<input type="checkbox" id="cb_view" value="1"  style="appearance: button;-webkit-appearance: button;" /> 비밀번호 보이기
+			</div>
+			<div class="inp-wrap">
+				<button type="button" id="btn_send"  class="btn-confirm"> 보내기 </button>
+			</div>
+		</div>
+
+	</div><!-- //container End -->
+
+
+	<footer id="footer" class="footer"> </footer>
+ 
+</div>
+</body>
+</html>

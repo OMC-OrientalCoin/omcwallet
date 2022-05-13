@@ -1,0 +1,249 @@
+<form id="wForm" name="wForm"  method="post" enctype="multipart/form-data">
+		<input type="hidden"    name="TIDX"  id="TIDX"  />
+		<input type="hidden"    name="BIDX"  id="BIDX"   />
+		<input type="hidden"    name="MIDX"  id="MIDX"  />
+		<input type="hidden"    name="SIDX"  id="SIDX"  />
+		<input type="hidden"    name="DIDX"  id="DIDX"  /> 
+		<input type="hidden" name="pCode" id="pCode"  />  
+		<input type="hidden" id="descStateF"  />  
+		<input type="hidden"  name="idx" id="vIdx"  value="<?=$_POST['idx'];?>" /> 
+
+<div id="section_contents" class="container" >
+
+	<div id="poductViewTitle" style=" width:100%; height:auto; padding:10px 20px; background-color: #FFF;font-size:3em; font-weight: bold;">
+		상품 상세 & 수정
+	</div>
+
+ 	<div id="poductViewTitle" style=" width:100%; height:auto; padding:30px 20px;  font-size:1.4em;">
+		찾을 단어 <input type="text"  name="srWord" id="srWord"   />   <span id="btnDiv">찾기</span>
+	</div>
+
+	<div id="contentList" style="width:100$;min-height: 400px;margin-top: 20px; padding: 30px 10px;"  > 
+
+		<div  class="container" style=" height:auto; "> 
+				<!-- default -->
+						<div class="cell" >
+							<div class="cell_label" >상품코드</div>
+							<div id="pCodeDiv"  class="inputCell"    style=" font-weight: bold;" >
+								
+							</div>
+						</div>
+						<div class="cell" >
+							<div class="cell_label" >카테고리</div>
+							<div class="inputCell"    style=" font-weight: bold;width:900px;" >
+								<select id="select_CT" name="select_CT" class="select130"  ></select>
+								<select id="select_CB" name="select_CB" class="select130"  ></select>
+								<select id="select_CM" name="select_CM" class="select130"></select>
+								<select id="select_CS" name="select_CS" class="select130" ></select>
+								<select id="select_CD" name="select_CD" class="select130" ></select>
+							</div> 
+							<!-- <div class="inputCell"    style=" font-weight: bold;width:900px;" >
+								<div id="select_CT" name="select_CT" class="select130"  ></div>
+								<div id="select_CB" name="select_CB" class="select130"  ></div>
+								<div id="select_CM" name="select_CM" class="select130"></div>
+								<div id="select_CS" name="select_CS" class="select130" ></div>
+								<div id="select_CD" name="select_CD" class="select130" ></div>
+							</div>-->
+						</div>
+						
+						<div class="cell" >
+							<div class="cell_label" >providerID</div>
+							<div id="providerID"  class="inputCell"    style=" font-weight: bold;" > </div>
+						</div>
+						
+
+						<div class="cell" >
+							<div class="cell_label" >상품명</div>
+							<div class="inputCell"    style=" font-weight: bold;" >
+								 <input type="text" name="ProductName" id="ProductName"   />
+							</div>
+						</div>
+
+							<div class="cell" >
+							<div class="cell_label" >짧은상품명</div>
+							<div class="inputCell"    style=" font-weight: bold;" >
+								 <input type="text" name="pName" id="pName"   />
+							</div>
+						</div>
+
+						<div class="cell" >
+							<div class="cell_label" >판매단위</div>
+							<div class="inputCell" >
+								 <input type="checkbox" name="productUnit" value="C" checked="checked" />낱개
+								 <input type="checkbox" name="productUnit" value="P" />꾸러미
+								 <input type="checkbox" name="productUnit" value="B" />박스
+								 <input type="checkbox" name="productUnit" value="Z" />기타
+							</div>
+						</div>
+
+						<div class="cell" >
+							<div class="cell_label" >정가 <span style="color:red">*</span></div>
+						 	<div class="inputCell"  >
+						 		 <input type="text" name="pPrice"  id="pPrice"  />
+							</div>
+						</div>
+
+						<div class="cell" >
+							<div class="cell_label" >판매가</div>
+							<div class="inputCell"  >
+								<input type="text" name="pSupplyPrice"  id="pSupplyPrice"  />
+							</div>
+						</div>
+						<div class="cell" >
+							<div class="cell_label" >공급수량<!-- <span style="color:red">*</span> --></div>
+						 	<div class="inputCell" >
+						 		 <input type="text" name="pQty" id="pQty" />
+							</div>
+						</div>
+							<div class="cell" >
+							<div class="cell_label" >옵션</div>
+							<div class="inputCell" >
+								 <input type="checkbox" name="pOption" value="P" />사이즈
+								 <input type="checkbox" name="pOption" value="B" />칼라
+								 <input type="checkbox" name="pOption" value="Z" />패키지
+							</div>
+						</div>
+	</div> 
+						<div style="width:100%; margin-top:30px;">
+							<input type="submit" value=" 수정 " style="width:150px;padding:10px;text-align:center;" />
+						</div>
+		
+		</form>
+
+			<div id="section_contents2" class="container"  style="margin-top:30px;" >
+				<div id="" style=" width:100%; height:auto; padding:10px 20px; background-color: #FFF;font-size:1.4em; font-weight: bold;">
+					상품이미지 설명수정 & 수정
+				</div>
+			 
+				<div id="section_contents2" class="container" >
+						<div class="cell" >
+							<div class="cell_label"  style="display: inline-block; vertical-align:top;">메인사진 <span style="color:red">*</span></div>
+						 	<div id="oImg" class="inputCell" ></div>
+						</div> 
+						
+						<div class="cell" >
+							<div class="cell_label"  >사진추가</div>
+						 	<div class="inputCell" id="content" >
+						 			 <div id="addImages" style="display: inline-block;" >사진추가 +</div>
+							</div>
+						</div>
+
+						<div class="cell" >
+							<div class="cell_label" style="display: inline-block; vertical-align:top;height: 300px;">
+								<div  style="display: inline-block;" >상품설명</div>
+								<div id="editDesc" style="display: inline-block;" >수정</div>
+							</div>
+						 	<div  id="descText"  class="inputCell"  style="height: 200px;"> </div>
+						</div>
+
+
+ 
+		<div class="cell2" style="margin-top: 30px;"> 
+			<div>목록</div> 
+		</div>
+ <div id="ex1" style="display:none;">
+    <div id="onPage" style="width:600px;height:auto;padding:10px 0px;"></div>
+  </div>
+
+ <style type="text/css">
+ 	.modal a.close-modal[class*="icon-"] {
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  line-height: 1.25;
+  text-align: center;
+  text-decoration: none;
+  text-indent: 0;
+  background: #900;
+  border: 2px solid #fff;
+  -webkit-border-radius:  26px;
+  -moz-border-radius:     26px;
+  -o-border-radius:       26px;
+  -ms-border-radius:      26px;
+  -moz-box-shadow:    1px 1px 5px rgba(0,0,0,0.5);
+  -webkit-box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+  box-shadow:         1px 1px 5px rgba(0,0,0,0.5);
+}
+  
+</style>
+
+<script src='/js/jquery/jquery.form.min.js' type='text/javascript' ></script>
+<script type="text/javascript" src="/js/jquery/jquery.modal.js" charset="utf-8"></script>
+<script type='text/javascript' src='/mall/provider/js/product.js'></script> 
+<script type='text/javascript' src='/mall/provider/js/func_provider.js' ></script>
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+ 
+		var idx=$("#vIdx").val() ;
+		 
+		viewContext(idx); 
+
+		$("#oImg").on("click", ".btnChgImg",  function ()
+		{
+			var thisID = $(this).attr('id');
+			var tmpIdx = thisID.split("_"); 
+
+			alert( thisID+" | "+idx +" | "+tmpIdx[1]);
+
+			if(tmpIdx[1] < 1)
+				alert("메인이미지는 지울수 없습니다. ");
+			else{
+ 				$.post( "/mall/provider/php/db_product_image_del.php", { state: thisID, pIdx:idx, seq:tmpIdx[1]}).done(function( data ) {
+ 					alert( "Data Loaded: " + data );
+ 				});
+ 			}
+			
+		}); 
+ 
+
+		//setCate( $("#cateLevel").val(),$("#setCate").val()); 
+		//creatSelectBox("select_CT","::: 1차 카테고리선택 ::: ","T","","","","");
+
+		//	    $('a[href="#ex"]').click(function(event){
+		$('#addImages').on("click", function(event){ 
+			
+			event.preventDefault();
+			var thisID = $(this).attr('id');
+			var tmpIdx = thisID.split("_"); 
+			var tmpPage = "";
+	    	// $(this).modal({
+			$("#ex1").modal({	open:'', closeClass: 'icon-remove', closeText: 'X'  });
+		 
+				tmpPage = "product_addImages.htm";
+				
+				$("#onPage").load(tmpPage+"?id="+thisID, {idx:idx});       
+	
+	    });
+
+
+	    $("#section_contents2").on("click", ".pImg",  function ()
+		{
+			var thisID = $(this).attr('id');
+			var tmpIdx = thisID.split("_"); 
+			 
+			 alert(thisID) 
+
+		}); 
+
+	
+		$("#editDesc").on("click", function ()
+		{
+			var thisID = $(this).attr('id');
+			var descState = $("#descStateF").val();
+			
+ 
+			event.preventDefault();
+		 
+	    	// $(this).modal({
+			$("#ex1").modal({	open:'', closeClass: 'icon-remove', closeText: 'X'  });
+			 
+			tmpPage = "product_editDesc.htm";
+				
+			$("#onPage").load(tmpPage+"?id="+thisID, {idx:idx,descState:descState});   
+
+		}); 
+	});
+</script>

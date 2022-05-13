@@ -1,0 +1,54 @@
+<duv id="top_menu">
+	<div id="H" class="menu  "  style="width: 200px; text-align: center;">MALLPLUS.KR</div>  
+	<div id="D" class="menu  " > 대시보드 </div> 
+	<div id="M"  class="menu "  > 회원관리 </div>
+</duv>
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{ 
+		$("#top_menu").on("click", ".menu",  function ()
+		{
+
+			let tmpSideMenu="";
+			let tmpURL="";
+			let thisID = $(this).attr('id');
+
+			$("#menu_left_title").html($("#"+thisID).html()); 
+
+			switch(thisID) {
+
+				case "H":	tmpURL="/index.html"; 	break;
+				case "D":	 
+							tmpURL="/manage/index.html?state=D"; 	break;
+
+				case "I":	tmpURL="/manage/index.html"; 	break;
+				case "O":	tmpURL="/manage/order/order_main.html"; 	 	break;
+				case "m3":	tmpURL="/manage/account/account_main.html";  break;
+				case "G":	mpSideMenu ="menu_goods.html"
+							tmpURL="/manage/goods/goods_main.html"; 	break;
+				case "M":	tmpURL="/manage/member/member_main.html";  	break;
+				case "S":	tmpURL="/manage/service/service_main.html";  	break;
+				case "m7":	tmpURL="/manage/policy/policy_main.html";  	break;
+				case "C":	tmpURL="/manage/settlement/settlement_main.html";  	break;
+				case "P":	tmpURL="/manage/payment/payment_main.html";  	break;
+				case "E":	tmpURL="/manage/event/event_main.html";  	break;
+				case "B":	tmpURL="/manage/partner/partner_main.html";  	break;
+			 
+				case "Z":	tmpURL="/manage/site/site_main.html";  	break;
+				case "L":	tmpURL="/manage/lang/lang_main.html";  	break;
+
+				case "myID":
+				case "btn_myID":	tmpURL="/manage/myInfo/myInfo_main.html";  	break;
+
+				default: tmpURL="/manage/summary.html";   break;
+			}
+
+$(location).attr('href', tmpURL);
+			//$("#menu_left").load(tmpSideMenu);
+		//	$("#content_wrap").load(tmpURL);
+
+			//$("#menu_left").load("common/top_menu.html");  
+		}); 
+	});//doc  
+</script>

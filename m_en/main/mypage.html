@@ -1,0 +1,239 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",    @$_SESSION['userName']);
+//define("USEREMAIL",   @$_SESSION['userEmail']); 
+//define("userPhone",   @$_SESSION['userPhone']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=USERWALLET;?>"; 
+
+			$("#gnb").load("gnb.html",{ USERID:USERID });   
+			$("#footer").load("foot_menu.html",{footer_state:"info"});     
+
+			get_mydata(USERID);
+
+
+			
+
+			$("#btn_chgPassword").on('click',function(){  
+				$(location).attr('href',"chgPassword.html");
+			});
+
+
+			$("#btn_chgPhone").on('click',function(){  
+				let userPhone = $('#userPhone').val(); 
+				let chgPhoneState = false;
+
+				if(!userPhone){
+					alert("Please enter your mobile number. "); 
+					$('#userPhone').focus(); 
+					return false;
+				}else{
+					chgPhoneState = chgPhoneFunc(USERID,userPhone);
+
+					if(chgPhoneState)
+					{
+						alert("I changed my cell phone number.")
+
+					}else{
+						alert("Failed to change mobile phone number. \nPlease try again later.")
+					}
+
+				}
+					get_mydata(USERID);
+			});  //btn_chgPhone
+
+
+
+			$("#btn_chgEmail").on('click',function(){  
+
+				let userEMAIL 			= $('#userEMAIL').val(); 
+				let chgEMAILState 		= false;
+				let validateEmailState 	= false;
+
+
+				if(!userEMAIL){
+					alert("Please enter your email address. "); 
+					$('#userEMAIL').focus(); 
+					return false;
+				}else{
+
+					validateEmailState = validateEmail(userEMAIL);
+					if(validateEmailState)
+					{
+						chgEMAILState = chgEmailFunc(USERID,userEMAIL);
+
+						if(chgEMAILState)
+						{
+							alert("I changed my email.")
+
+						}else{
+							alert("Failed to change email. \nPlease try again later.")
+						}
+
+
+							get_mydata(USERID);
+
+					}else{
+						alert("Please enter a valid email address ");
+						return false;
+					}
+				}
+
+			});
+
+
+
+		});  //jquery
+
+
+		function validateEmail(email) {
+			var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+			return re.test(email);
+		}
+
+
+
+//console.log("chgPhoneFunc --->",userID+"|"+userPhone);
+function chgPhoneFunc(userID,userPhone)
+{ 
+	let params = {userID:userID,userPhone:userPhone};
+	let jURL = "/m_en/module/updateUserPhone.php"; 
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText;  
+
+	if(Number(returnValue)>0 )
+		return true; 
+	else				 
+		return false
+}
+
+function chgEmailFunc(userID,userEmail)
+{ 
+	let params = {userID:userID,userEmail:userEmail};
+	let jURL = "/m_en/module/updateUserEmail.php"; 
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL,
+		data: params,
+		async: false
+	}).responseText;  
+
+	if(Number(returnValue)>0 )
+		return true; 
+	else				 
+		return false
+}
+
+
+
+function get_mydata(userID)
+{ 
+	var params = {userID:userID};
+	let jURL = "/m_en/module/get_myData.php"; 
+
+	var returnValue = $.ajax({
+		type: "POST",
+		url: jURL, 
+		data: params,
+		async: false
+	}).responseText;
+
+	var obj = $.parseJSON(returnValue); 
+
+	$("#userPhone").val(obj[0].userPhone);
+	$("#userEMAIL").val(obj[0].userEmail); 
+}
+
+
+</script>
+</head>
+<body>
+	<div id="wrap" class="wrap"> 
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">My Page</h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">Open Menu</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">Notice</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+			<div class="inp-wrap__tit"  style="margin-top: 30px;">Id</div>	 
+			<div class="inp-wrap">
+				<input type="text" id="userID"  name="userID" value="<?=USERID;?>"  class="inp-txt full"  readonly="readonly" style="border:none; background-color: #EAEAEA;">
+			</div>
+
+			
+			<div class="inp-wrap__tit"  style="margin-top: 5px;">Name</div>	 
+			<div class="inp-wrap">
+				<input type="text" id="userName"  name="userName" value="<?=USERNAME;?>" class="inp-txt full"  readonly="readonly" style="border:none; background-color: #EAEAEA;">
+			</div>
+			
+			<div class="inp-wrap__tit"  style="margin-top: 5px;">Phone Number</div>	  
+			<div class="inp-wrap">
+				<input type="text" id="userPhone"  name="userPhone"  class="inp-txt full" placeholder="전화번호" style="width: 76%;" />
+				<button  id="btn_chgPhone"  class="inp-txt  " style="width: 20%;margin-left: 4px; padding:3px; text-align: center; background-color: #1e7aff;color: #FFF;"> Change </button>
+			</div>
+
+			<div class="inp-wrap__tit"  style="margin-top: 5px;">E Mail </div>	 
+			<div class="inp-wrap">
+				<input type="text" id="userEMAIL"  name="userEMAIL"  class="inp-txt full" placeholder="E-MAIL" style="width: 76%;" />
+
+				<button  id="btn_chgEmail"  class="inp-txt  " style="width: 20%;margin-left: 4px; padding:3px; text-align: center; background-color: #1e7aff;color: #FFF;">Change </button>
+			</div>
+
+
+			<div class="inp-wrap">
+				<select id="userNation" name="userNation" class="inp-txt full" > 
+					<option value="kr">Korean</option>
+					<option value="Cn">China</option>
+					<option value="jp">Japan</option>
+					<option value="vn">Vietnam</option>
+					<option value="pp">Philippines</option>
+				</select> 
+			</div> 
+
+			<div id="" class="your-acc-box" style=" font-size: 12px; font-weight: normal;   margin: 50px auto; border-top: 1px solid #DADADA;" > 
+				<img src="/m_en/img/sub/gear.png" />
+				<div id="btn_chgPassword" class="" style="width: 48%;display: inline-block; cursor: pointer;margin-top: 6px;" > Change Password</div>
+				<div id="" class="" style="width: 48%; display: inline-block; text-align: right;" > &nbsp;</div> 
+			</div> 
+
+				<!-- <div class="btn-wrap">
+				<button type="button" id="btn_login" class="btn-confirm">로그인</button>
+			</div> -->
+
+		</div> 
+
+		<footer id="footer" class="footer"></footer>
+	</div>
+</body>
+</html>

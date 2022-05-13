@@ -1,0 +1,233 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="/m/css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css"> 
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+
+		input{ width: 96%; padding: 6px; background-color: #DADADA; border:none; }
+		div{margin: 0px; padding: 0px;}
+		.cell_wrap{margin-bottom: 10px;}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{
+
+
+			$("#top").load("top_bar.html",{ pageTitle: "내 정보 변경" }); 
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=WALLET;?>";
+			$('#userID').val(USERID); 
+			$('#strUserID').html(USERID); 
+
+			$('#MyWalletAddress').html(MyWalletAddress); 
+
+			$("#btn_update").on('click', function (e) 
+			{    	
+				if($("#userPassword").val())
+				{
+					
+					if($("#userPassword_old").val() != $("#userPassword").val())
+					{
+						alert("현재 비밀번호가 등록된 비밀번호와 맞지 않습니다. \n확인하여 주세요. "); 
+						$('#userPassword').focus(); 
+						return false;
+					}
+ 
+
+					if(!$("#passwd_chg").val())
+					{
+						alert("변경 비밀번호를 입력 해 주세요. "); 
+						$('#passwd_chg').focus(); 
+						return false;
+					}
+
+					if(!$("#passwd_comp").val())
+					{
+						alert("변경 비밀번호 확인을  입력 해 주세요. "); 
+						$('#passwd_comp').focus(); 
+						return false;
+					}
+					 
+					if($("#passwd_chg").val() != $("#passwd_comp").val())
+					{
+						alert("변경 비밀번호와  변경 비밀번호 확인와 맞지 않습니다. \n확인하여 주세요. "); 
+						$('#passwd_comp').focus(); 
+						return false;
+					}
+
+				}
+
+ 
+
+					var url = $(this).attr( "action" );
+					var data = $(this).serialize();
+
+					$.post( url, data )
+					.done(function( data ) {
+						console.log('--->', data);
+						alert("업데이트 했습니다.")
+						getMyData(USERID);
+					});
+
+	  		});//   
+
+
+
+		$("#btn_left_menu").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				//opacity: 0.9,
+				left: "+=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+		$("#menu_left").on('click', function (e) 
+		{  
+
+			$("#menu_left").load("leftMenu.html");
+
+			$( "#menu_left" ).animate({
+				opacity: 0.9,
+				left: "-=400",
+				//height: "toggle"
+			}, 400, function() {
+			    // Animation complete.
+			});
+		});
+
+
+
+			getMyData(USERID); 
+
+ 		});//jquery 
+
+
+
+		function getMyData(USERID)
+		{
+
+			var jURL ="/m/module/get_myData.php";
+
+			let params = { "userID":USERID };
+			let goURL = "";
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL ,
+				data: params,
+				async: false
+			}).responseText; 
+
+			var obj = $.parseJSON(returnValue);
+
+			$("#userPassword_old").val(obj[0].userPassword);
+			$("#userName").html(obj[0].userName);
+			$("#userPhone").val(obj[0].userPhone);
+			$("#userEMAIL").val(obj[0].userEmail);
+			$("#userNation").val(obj[0].userNation).attr("selected","selected");
+
+
+	}// 
+
+
+</script>
+
+</head>
+<body>
+				<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "> </div>
+	<div id="top" class="header_wrap" style=" width: 100%; height: auto;"></div> 
+
+	<div id="" class="content_wrap" style="width: 90%;height: 80%; padding: 3%;" > 
+		<form name="updateForm" id="updateForm" method="post" action="/m/module/set_member_update.php">
+			<input type="hidden" id="userID" name="userID"   /> 
+
+			<div id="" class="  "  style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin-bottom: 20px;" >  
+				회원정보 변경 안내 <br/>
+
+				비밀번호는 5글자 이상 영어 숫자 특수문자를 입력하세요
+			</div>
+
+			<div id="strUserID" class="cell_wrap "  style="margin-top: 20px;" >aaaaaaaa </div>  
+
+			<div id="" class="cell_wrap">  
+				<input type="password" id="userPassword" name="userPassword"  class="inputField"  placeholder="현재 비밀번호" /> 
+				<input type="hidden" id="userPassword_old"   /> 
+			</div> 
+
+			<div id="" class="cell_wrap">  
+				<input type="password" id="passwd_chg" name="passwd_chg"  class="inputField"  placeholder="변경 비밀번호" /> 
+			</div> 
+
+			<div id="" class="cell_wrap "> 
+				<input type="password" id="passwd_comp" name="passwd_comp"  class="inputField"  placeholder="변경비밀번호확인"/> 
+			</div> 
+
+			<div id="userName" class="cell_wrap" style="margin-top: 20px;"> </div> 
+
+			<div id="" class="cell_wrap">
+				<input type="text" id="userPhone" name="userPhone"  class="inputField" placeholder="모바일 전화번호" /> 
+			</div> 
+
+
+			<div id="" class="cell_wrap"> 
+				<input type="text" id="userEMAIL" name="userEMAIL"  class="inputField" placeholder="E-MAIL" /> 
+			</div> 
+
+			<div id="" class="cell_wrap">  
+				<select id="userNation" name="userNation" style="font-size: 14px; padding:4px; width:  96%; background-color:#DADADA;  ">
+					<option  >::: NATION 선택 :::</option>
+					<option value="kr">한국</option>
+					<option value="Cn">중국</option>
+					<option value="jp">일본</option>
+					<option value="vn">베트남</option>
+					<option value="pp">필리핀</option>
+				</select> 
+			</div> 
+
+			<div id="" class="  " style="text-align: center; margin-top: 30px;">
+				<button id="btn_update" style="font-size: 16px; padding:8px;background-color:#1e7aff; color: #FFF;width:  90%; padding: 15px 0px;"> 변경 </button> 
+			</div>
+		</form>
+<!-- 	<div id="" class="content_wrap" style="margin-top: 40px; border-top: 1px solid #DADADA; " >
+		<div id="" class=" "></div>
+	</div>   -->
+</div>
+</body>
+</html>
+

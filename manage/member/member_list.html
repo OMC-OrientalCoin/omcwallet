@@ -1,0 +1,122 @@
+<div  class="container" style="width:66%; ">
+	<div   style="width:100%;text-align:right;font-size:12px; " >
+		관리자페이지 > 회원관리
+	</div>
+	<div style="width:100%;font-size:30px;font-weight:bold;"  >
+		회원 관리
+	</div>
+<!-- s s -->
+	<div id="" style="width:60%; height:auto; margin-top:20px; padding:10px;border: 1px #DADADA solid;">
+		 <div id="" style="width:100%; height:auto; margin: 2px; ">
+			<div id="" style="width:150px;  height:auto; display: inline-block;">
+				<input type="checkbox"  id="chkdate" />   <span id="btnDiv">등록일</span> 
+			</div>
+			<div id="" style="width:60%; height:auto; display: inline-block;">
+				from <input type="text"  name="from" id="from" /> ~ to<input type="text"  name="to" id="to" />
+			</div>
+
+		</div>
+
+		<div id="" style="width:100%; height:auto; margin: 2px; ">
+			<div id="" style="width:150px;  height:auto; display: inline-block;">
+				<input type="checkbox"  id="order" />
+				<select id="selFindState">
+					<option value="K">구분</option>
+					<option value="P">회원</option>
+					<option value="G">상품명</option>
+					<option value="C">가격별</option>
+				</select>
+			</div>
+			<div id="" style="width:60%; height:auto; display: inline-block;">
+				<input type="text"  name="srWord" id="srWord" /> 
+			</div>
+			<div id="" style="width:60%; height:auto; display:none;">
+				<select id="selFindCate">
+					<option value="I">카테</option>
+					 
+				</select>
+			</div>
+		</div>
+		<div id="" style="width:100%; height:auto;margin-top: 10px;   ">
+			<div id="" style="width:48%; height:auto;margin-top: 10px;display: inline-block;  ">
+				<button id="btninit"  style="padding:2px 20px;">초기화</button>
+			</div>
+			<div id="" style="width:50%; height:auto;margin-top: 10px; text-align: right;display: inline-block; ">
+				<button id="btnDiv"  style="padding:2px 20px;">찾기</button>
+			</div>
+		</div>
+	</div>
+	<!-- sr end-->
+
+
+	<div id="contentList" style="display: inline-block; vertical-align:top; width:100%; min-height: 400px;margin-top: 30px;" > </div>
+
+	<div style="display: inline-block; vertical-align:top; width:100%; min-height: 30px;margin-top:10px;border-top :1px solid #0A0A0A;">
+		<div id="pageInfo11" style="display: inline-block; vertical-align:top;width:15%;"></div>
+		<div id="page"  style="display: inline-block; vertical-align:top;width:68%;"></div>
+		<div id="b"   style="display: inline-block; vertical-align:top;width:15%;">
+			<div id="member_write" style="display: inline-block; vertical-align:top;width:190px;text-align:right;"> 등록</div>
+		</div>
+	</div>
+
+	<div id="ex1" style="display:none;">
+		<div id="onPage" style="width:600px;height:auto;padding:10px 0px;"></div>
+	</div>
+</div>
+
+<script type='text/javascript' src='/manage/js/members.js'></script>
+<!-- <script  type="text/javascript" src="/js/paging.js"></script> -->
+
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+
+ 	//list_members(state,srWord,setBlock,BlockPages)
+		 list_members("contentList","","","","")
+
+/*
+		var block = $("#block").val();
+
+		if(!block)
+			var BlockPages = 10; //$("#blockView").val();
+
+		//list_order(buyerID,oQty)(buyerID,oQty)
+		list_goods("contentList","","","","","");
+		//paging("order",block,BlockPages);
+
+		$("#goods_write").on("click",function ()
+		{
+			$(location).attr("href", "goods/goods_write.htm")
+		});
+
+		$('#contentList').on("click",".chkbox_group", function () {
+			var thisID = $(this).attr('id');
+			var tmpIdx = thisID.split("_")[1];
+			var dp_state = 1;
+
+			if ($("#"+thisID).is(':checked'))
+				dp_state = 1;
+			else
+				dp_state = 0;
+
+			$.post( "/manage/module/dpUpdate.php", { "idx": tmpIdx,"dp_state": dp_state }).done(function( data ) {
+			    alert( "Data Loaded: " + data );
+			});
+		});
+
+		$("#btnFind").on('click', function (e)
+		{
+			var srWord = $("#srWord").val();
+			if(srWord != ""){
+			 		list_goods("contentList", "find","ProductName",srWord,"","");
+			}else{
+			 	alert("검색어를 입력해 주세요");
+			 	$("#srWord").focus();
+			}
+
+			return false;
+		});*/
+
+	});//doc
+	</script>

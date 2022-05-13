@@ -1,0 +1,258 @@
+<?php
+/*
+@session_start(); 
+
+if(@$_SESSION['userID'])
+	header('location: mypage.html');
+*/
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<style type="text/css">
+		#selectNation {
+			position: absolute;
+			display: none;
+			top: 50px;
+			right: 16px;
+			width: 50px;
+			height: auto;
+			padding: 10px;
+			z-index: 999;
+			background-color: #fff;
+			 
+		}
+
+		.cNation {
+			width: 100%;
+			padding: 4px;
+			margin: 4px 0px;
+			font-size: 18sp;
+			font-weight: bold;
+			text-align: center;
+			color: #000;
+			border-bottom: 1px solid #DADADA;
+			cursor: pointer; 
+
+		}
+		.cNation:last-child{
+			border-bottom: none;
+		}
+	</style>
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+			$("#top").load("top_bar_nomenu.html",{ pageTitle: "Oriental coin" }); 
+			$("#btn_login").on('click', function (e) 
+			{   
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+
+				if(!userID){alert("請輸入您的身份證. "); $('#userID').focus(); return false;}
+				if(!userPassword){alert("請輸入密碼. "); $('#userPassword').focus(); return false;} 
+
+				login(userID,userPassword);
+				
+
+	  		});// $("#btn_genWallet").on('click', function (e)  
+
+			$("#btn_join").on('click', function (e) 
+			{   
+			//회원가입 
+			$(location).attr('href',"m_joinForm.html");
+
+	  		});// $("#btn_genWallet").on('click', function (e) 
+
+			//alert(" 아이디찾기 이동 ");  
+			$("#btn_findID").on('click', function (e) 
+			{    
+				$(location).attr('href',"findID.html");
+	  		});//  
+
+			//
+			$("#btn_findPasswd").on('click', function (e) 
+			{    	
+				$(location).attr('href',"findPW.html");
+	  		});//  
+
+
+			$("#btn_nation").on('click', function (e) {
+				$("#selectNation").show();
+			});//btn_nation
+
+
+			$("#selectNation").on('click',".cNation", function (e) {
+				var thisID = $(this).attr("id");
+				let goUrl="";
+
+				if(	thisID == "x"){
+					$(this).hide();
+				}else{
+					switch(thisID)
+					{
+
+						case "en" :  goUrl="/m_en/main/"; break;
+						case "cn" :  goUrl="/m_cn/main/"; break;
+						case "kr" :  goUrl="/m/main/"; break;
+					}
+
+					$(location).attr('href', goUrl);
+				}
+
+			});//btn_nation
+
+ 		});//jquery 
+
+
+		function setCookie(cookieName, value, exdays){
+			var exdate = new Date();
+			exdate.setDate(exdate.getDate() + exdays);
+			var cookieValue = escape(value) + ((exdays==null) ? "" : "; expires=" + exdate.toGMTString());
+			document.cookie = cookieName + "=" + cookieValue;
+		}//setCookie
+
+		function deleteCookie(cookieName){
+			var expireDate = new Date();
+			expireDate.setDate(expireDate.getDate() - 1);
+			document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString();
+		}//deleteCookie
+
+		function getCookie(cookieName) 
+		{
+
+			cookieName = cookieName + '=';
+			var cookieData = document.cookie;
+			var start = cookieData.indexOf(cookieName);
+			var cookieValue = '';
+
+			if(start != -1){
+				start += cookieName.length;
+				var end = cookieData.indexOf(';', start);
+				if(end == -1)end = cookieData.length;
+				cookieValue = cookieData.substring(start, end);
+			}
+			return unescape(cookieValue);
+		}
+
+		function login(userID,userPW)
+		{
+
+		//var kind = $(':radio[name="kind"]:checked').val(); 
+		let params = { "userID":userID,"userPassword":userPW};
+		let goURL = "";
+
+		var returnValue = $.ajax({
+			type: "POST",
+			url: "/m_cn/module/login.php",
+			data: params,
+			async: false
+		}).responseText; 
+
+		console.log("login -->",returnValue)
+
+		if(Number(returnValue)>0 )
+		{   
+
+			goURL = "main.html";
+			$(location).attr('href', goURL);
+
+		}else{ 
+			alert("Login Error\n請檢查您的登錄信息或聯繫管理員");
+			return false;
+		}
+	}//login()
+</script>
+</head>
+<body>
+		<div id="selectNation">
+		<div id="X" class="cNation" style="text-align: right; padding: 2px 0px; border:none; top : 5px;">X</div>
+		<div id="en" class="cNation">English</div>
+		<div id="cn" class="cNation">中文</div>
+		<div id="kr" class="cNation">한국</div>
+	</div>
+	<div id="wrap" class="wrap-main">
+
+		<header id="header" class="header-main">
+			<h1 class="logo"><a href="#"><img src="../img/main/logo.png" alt="Oriental"></a></h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">打開所有菜單</span>
+			</button> 
+			<button type="button" class="btn-notice"></button>
+			<button type="button" id="btn_nation" class="btn-notice">
+				<span class="blind">注意</span>
+			</button>
+
+ 
+</header>
+
+<div id="container" class="container container-main container-fm">		
+	<div class="main-info" style="font-size: 22px;font-weight: bold; color: #FFF; text-align: center;">
+			  Oriental coin 沒看到.<br />歡迎!
+		</div> 
+</div>
+<div class="your-acc" style="margin-top:30px;">
+	<div class="your-acc-box">
+		<div class="login">			
+			<div class="inp-wrap">
+				<input type="text" id="userID" class="inp-txt full" placeholder="ID">
+			</div>
+			<div class="inp-wrap">
+				<input type="password"  id="userPassword"  class="inp-txt full" placeholder="密碼">
+			</div>
+			<div class="btn-wrap">
+				<button type="button" id="btn_login" class="btn-confirm">登錄</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="" class="your-acc-box" style=" font-size: 12px; font-weight: normal;   margin: 20px auto;   " > 
+		<div id="btn_join" class="" style="width: 48%;display: inline-block;" >報名</div>
+		<div id="" class="" style="width: 48%; display: inline-block; text-align: right;" >  
+		<span id="btn_findID"  style="padding: 3px ; display: inline-block;" >找身份證</span> | 
+		<div id="btn_findPasswd" style="padding: 3px; display: inline-block; margin-left: 10px;" >查找密碼 </span> 
+	</div> 
+
+
+</div>
+
+	<!-- 			<div class="main-add">
+	<button type="button" class="main-add__btn">
+	<span class="blind">추가하기</span>
+	</button>
+</div> -->
+
+</div><!-- //container End -->
+
+<footer id="footer" class="footer">
+	<!-- <div class="foot-menu">
+		<ul class="foot-menu__group">
+			<li class="foot-menu__item home on">
+				<span class="foot-menu__txt">홈</span>
+			</li>
+			<li class="foot-menu__item my-info">
+				<span class="foot-menu__txt">내정보</span>
+			</li>
+			<li class="foot-menu__item send">
+				<span class="foot-menu__txt">코인전송</span>
+			</li>
+			<li class="foot-menu__item receive">
+				<span class="foot-menu__txt">코인수신</span>
+			</li>
+			<li class="foot-menu__item transaction">
+				<span class="foot-menu__txt">트랜젝션</span>
+			</li>
+		</ul>
+	</div> -->
+</footer>
+
+</div>
+</body>
+</html>

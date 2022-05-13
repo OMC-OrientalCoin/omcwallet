@@ -1,0 +1,170 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function () {
+
+			$('#btn-home').on('click', function () {
+				$(location).attr('href', "/m/main/index.html");
+			});
+
+			$("#btn_join").on('click', function (e) {
+				e.preventDefault();
+
+				let userID = $('#userID').val();
+				let userPassword = $('#userPassword').val();
+				let passwd_comp = $('#passwd_comp').val();
+				let userName = $('#userName').val();
+				let userPhone = $('#userPhone').val();
+				let userEMAIL = $('#userEMAIL').val();
+				let userNation = $("#userNation option:selected").val();
+
+				if (!userID) { alert("아이디를  입력해 주세요. "); $('#userID').focus(); return false; }
+				else if (!userPassword) { alert("비밀번호를 입력해 주세요. "); $('#userPassword').focus(); return false; }
+				else if (!passwd_comp) { alert("비밀번호확인을 입력해 주세요. "); $('#passwd_comp').focus(); return false; }
+				else if (userPassword != passwd_comp) { alert("비밀번호와 비밀번호확인이 다릅니다.입력해 주세요. "); $('#passwd_comp').val(""); $('#passwd_comp').focus(); return false; }
+				else if (!userName) { alert("성명을 입력해 주세요. "); $('#userName').focus(); return false; }
+				else if (!userEMAIL) { alert("EMAIL을 입력해 주세요. "); $('#userEMAIL').focus(); return false; }
+				else {
+
+					let data = $("#joinForm").serialize();
+					let retValue = recMember(data);
+
+					if (retValue > 0) {
+						alert("회원등록되셨습니다.");
+						$(location).attr('href', "/m/main/index.html");
+
+					}
+					else
+						alert("회원등록 실패" + e);
+				}
+
+				//else if (!userPhone) { alert("연락를 입력해 주세요. "); $('#userPhone').focus(); return false; }
+				//else if (!userNation) { alert("국가를 입력해 주세요. "); $('#userNation').focus(); return false; }
+
+			});// btn_join s
+
+			function recMember(params) {
+
+				let jURL = "/m/module/set_member_rec.php";
+				let data = 0;
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				console.log("login -->", returnValue)
+
+				data = parseInt(returnValue);
+
+				return data;
+
+
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div id="wrap" class="wrap">
+
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">회원가입</h1>
+			<button type="button" id="btn-home" class="btn-home"
+				style="font-size: 18px;font-weight: bold; line-height: 30px; color: #FFF;text-align: center; margin-top: 10px; margin-left: 20px;">
+				< </button>
+					<button type="button" id="btn_nation" class="btn-notice">
+				<span class="blind">choice Nation</span>
+			</button>
+					<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+
+			<form name="joinForm" id="joinForm" method="post">
+				<input type="hidden" id="chkID_state" name="chkID_state" />
+
+				<div id="" class="inp-txt full"
+					style="width: auto; height:80px; background-color: #EAEAEA; padding: 10px; margin: 20px 0px;">
+					회원가입 안내 <br />
+					아이디는 5글자 이상 입력하세요<br />
+					비밀번호는 5글자 이상 영어 숫자 특수문자를 입력하세요
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userID" name="userID" class="inp-txt full" placeholder="아이디  (5자이상)">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="password" id="userPassword" name="userPassword" class="inp-txt full"
+						placeholder="비밀번호">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="password" id="passwd_comp" name="passwd_comp" class="inp-txt full"
+						placeholder="비밀번호확인">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="text" id="userName" name="userName" class="inp-txt full" placeholder="성명">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userPhone" name="userPhone" class="inp-txt full" placeholder="전화번호">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userEMAIL" name="userEMAIL" class="inp-txt full" placeholder="E-MAIL">
+				</div>
+
+
+				<div class="inp-wrap">
+					<select id="userNation" name="userNation" class="inp-txt full">
+						<option>::: NATION 선택 :::</option>
+						<option value="kr">대한민국</option>
+						<option value="pp">USA</option>
+						<option value="Cn">中國</option>
+						<option value="jp">日本</option>
+						<option value="vn">Việt Nam</option>
+
+					</select>
+
+				</div>
+
+				<div class="btn-wrap" style="margin-top: 30px;">
+					<button type="button" id="btn_join" class="btn-confirm"> 가 입 </button>
+				</div>
+
+			</form>
+
+
+		</div><!-- //container End -->
+
+		<footer id="footer" class="footer"> </footer>
+
+	</div>
+</body>
+
+</html>

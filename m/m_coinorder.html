@@ -1,0 +1,221 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		input{ width: 80%; padding: 4px; background-color: #DADADA; border:none; }
+
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+		}
+		
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<script
+	src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+
+
+			$("#top").load("top_bar.html",{ pageTitle: "코인 요청" }); 
+
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=WALLET;?>";
+
+			$('#userID').html(USERID); 
+			$('#MyWalletAddress').html(MyWalletAddress); 
+
+
+			$("#btn_order").on('click', function (e) 
+			{    
+				e.preventDefault();
+				var obj = $("#orderForm").serialize();
+				let orderID = $('#orderID').val(); ;
+				if(orderID){ 
+					if(MyWalletAddress)
+						orderForm(obj)
+					else
+					{
+						alert("내 지갑주소가 없습니다.")
+						return false;
+					}
+
+				}
+				else
+				{
+					alert("주문요청할 아이디를 찾아주세요.")
+					return false;
+				}
+			});//btn_order
+
+
+
+			$("#btn_findID").on('click', function (e) 
+			{    
+				$("#findID_Form").show(); 
+			});//findID
+
+
+			$("#btn_find").on('click', function (e) 
+			{    
+				$("#findID_Form").show();
+
+			});//findID
+
+			$("#btn_close").on('click', function (e) 
+			{    
+				$("#findID_Form").hide();
+
+			});//findIDbtn_inputID
+
+			$("#btn_inputID").on('click', function (e) 
+			{    
+				let findID = $('#findID').val();
+
+				if(findID)
+					findIDFunc("list",findID ) 
+				else
+				{
+					alert("찾으시는 아이디를 입력해 주세요.")
+					$('#findID').focus(); 
+					return false;
+				}
+
+			});//btn_inputID
+
+
+
+			$("#findID_Form").on('click',".oID", function (e) 
+			{    
+
+
+				var thisID = $(this).attr("id");
+				var selectID = $("#"+thisID).html();
+ 
+				$("#orderID").val(selectID);
+				$("#findID_Form").hide();
+
+			});//findID
+
+
+ 		});//jquery 
+
+
+		function orderForm(params)
+		{ 
+			var jURL   = "/m/module/set_order.php";
+			 
+    
+			$.post(jURL, params )
+			.done(function( retdata ) {
+				alert( "Data Loaded: " + retdata ); 
+				alert(MyWalletAddress+" 요청접수");
+			});
+		}//orderForm
+
+
+
+		function findIDFunc(divID,orderID)
+		{  
+
+
+			var jURL   = "/m/module/orderID.php";
+			var params = { orderID:orderID};   
+
+			var returnValue = $.ajax({
+				type: "POST",
+				url: jURL,
+				data: params,
+				async: false
+			}).responseText;
+
+			var obj = $.parseJSON(returnValue);   
+
+//console.log(" userID  ", orderID )  
+
+let tmpForm ="";
+
+for (var i = 0; i < obj.length; i++) {
+
+	tmpForm +="<div id='' class='cell datafield' style='width:90%; margin-bottom:10px; padding:8px;' >"; 
+	tmpForm +="	<div id='oID_"+ i+"' class='oID cell datafield'  > "+ obj[i].userID+"</div>";
+	tmpForm +="</div>";
+}
+
+$("#"+divID).html(tmpForm)
+
+		}//findIDFunc
+
+
+
+
+
+	</script>
+
+</head>
+<body>
+	<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "></div>
+
+	<div id="findID_Form" class="" style="display: none; width: 100%; height: 70%; left: 0px; top: 70px; background-color: #eaeaea;  z-index: 99; position: absolute;   ">
+		<div id=" " class="cell" style="width: 60%; height: auto; margin:50px auto; background-color: #FFF;  padding: 5%;" > 
+			<div id="btn_close" class="cell" style="text-align: right;font-size: 20px;font-weight: bold;"> X </div>
+			<div id=" " class="cell  ">  
+				<div id=" " class=" " style="width: 76%;display: inline-block;"><input type="text" id="findID" name="findID" placeholder="ID 입력" /> </div> 
+				<div id="btn_inputID" class="" style="width: 10%; background-color:#1e7aff;display: inline-block;color: #FFF;padding: 8px;text-align: center;" >입력</div>
+			</div>
+			<div id="list" class="cell" style="width: 400px; height: 80%;"> </div> 
+		</div>
+	</div>
+
+	<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+
+
+
+	<div id="" class="content_wrap" style="width: 90%;height: 80%; padding: 3%;" >
+		<form id="orderForm" method="post" >
+			<input type="hidden" id="requestID" name="requestID"  value="<?=USERID;?>" />
+			<input type="hidden" id="requestWallet" name="requestWallet"  value="<?=WALLET;?>" />
+			<div id=" " class="cell  ">요청자 찾기</div>
+			<div id="list" class="cell">
+				<div id=" " class="" style="width: 80%; display: inline-block;">
+					<input type="text" id="orderID" name="orderID"  />
+				</div>
+				<div id="btn_find" class="" style="width: 60px;background-color:#1e7aff;display: inline-block;color: #FFF;padding: 8px;text-align: center;" >찾기</div>
+			</div>
+			<div id=" " class="cell  ">요청수량</div>
+			<div id="list" class="cell">
+				<input type="number" id="quantity" name="quantity" /> 
+			</div>
+		</form>
+		<div id="btn_order" style="width:  100%; background-color:#1e7aff; color: #FFF;margin: 20px auto; padding: 8px 0px; text-align: center;">
+			보내기
+		</div>
+	</div>
+</body>
+</html>
+

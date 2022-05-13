@@ -1,0 +1,220 @@
+<?php
+@session_start(); 
+define("USERID",  @$_SESSION['userID']);
+define("WALLET",  @$_SESSION['userWallet']);
+?>
+<html lang="en">
+
+<head>
+	<link rel="stylesheet" href="css/omc_m.css" type="text/css"   rel="stylesheet">
+	<style type="text/css">
+		body{background-color: #DADADA;}
+		.menu{
+			width: 94%;
+			height:20px;
+			padding: 10px;
+			margin-top: 5px;
+			background-color: #FFF;
+		}
+
+		.content_wrap{
+			width: 94%;
+			height:20px;
+		}
+
+		.datafield{
+			font-size: 14px;
+			font-weight: bold;
+			margin: 3px 0px;
+			padding:0 5px; 
+			overflow:hidden; 
+			text-overflow:ellipsis; 
+			white-space:nowrap; 
+		}
+		
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+	integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+	crossorigin="anonymous"></script> 
+	<script type="text/javascript">
+		$(function()
+		{  
+			$("#top").load("top_bar.html",{ pageTitle: "코인 수신 내역" }); 
+			omc_getTransaction("transaction_list","omc_get_transaction.php");
+		});
+
+		function addCommas(x) {
+			x = x?x:0;
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+		}
+		
+		function list_transaction(divID, state){
+			
+			var tmpForm ="";
+
+			for (var i = 0; i < 10; i++) {
+				
+
+				tmpForm +="<div id='' class='cell datafield' style='width:90%; margin-bottom:10px; background-color:#FFF; padding:8px;color:#0A0A0A;' >";
+				tmpForm +="	<div id='' class='cell datafield'  >2020 01 10 </div>"; 
+				tmpForm +="	<div id='' class='cell datafield'  >0x37e715009ffb12fcd1051e76edffedb513d830fd</div>";
+				tmpForm +="	<div id='' class='cell datafield'  >0x37e715009ffb12fcd1051e76edffedb513d830fd</div>";
+				tmpForm +="	<div id='' class='cell datafield' style='' >1000</div>";
+				tmpForm +="</div>";
+
+			}
+
+			$("#"+divID).html(tmpForm);
+		}
+
+
+
+
+		 // 1 블럭번호 
+		 function blockInfoFunc(divID)
+		 {  
+
+				//var path = pathfunc();
+
+				var jURL   = "/module/getBlockNumber.php";
+				var params = { param:""};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+
+				// catch blockNumber
+				var blockNumber = parseInt(obj.result, 16);
+
+				$("#"+divID).html(blockNumber);
+
+				//getTransactionList("transaction_list", dec)
+
+				eth_getBlockByNumber(obj.result)
+
+			}//blockInfo
+
+
+			function omc_getTransaction(divID,page)
+			{ 
+				var jURL   = "/m/module/omcapi.php";
+				var params = { page:page};   
+				var retData = "";  
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					dataType: 'jsonp',
+					jsonpCallback: "myCallback",
+					async: false
+				}).responseText;
+
+				console.log("omc_getTransaction -->",returnValue)
+				var obj = $.parseJSON(returnValue);  
+
+				for(var i in obj) 
+				{ 
+					 console.log("transaction_hashobj[i] -->", obj[i].transaction_hash);//.transaction_hash 
+					 retData = eth_getTransactionByBlockHash(obj[i].transaction_hash,obj[i].regDate)
+
+					 $("#"+divID).append(retData)
+					}
+
+
+			}//omc_getTransaction
+
+			function eth_getTransactionByBlockHash(hash,regDate)
+			{    
+				var jURL   = "/m/module/eth_getTransactionByHash.php";
+				var params = { hash:hash};   
+
+				var returnValue = $.ajax({
+					type: "POST",
+					url: jURL,
+					data: params,
+					async: false
+				}).responseText;
+
+				var obj = $.parseJSON(returnValue);  
+
+	//console.log(" eth_getTransactionByBlockHashAndIndex  ", hash+" <br /> "+ returnValue+" <br /> "+obj.result ) 
+	var value =  obj.result.value; 
+	value =  value.substring(2,value.length);
+	
+	let tmpForm ="";
+/*	tmpForm += "<div style='width: 100%;height: 44px; border-bottom:1px solid #dadada; padding: 10px; '>";
+	tmpForm += "       <div id='' class='' style='width: 100%;display:  block;'>";
+	tmpForm += "          <div id='' class=' ' style='width: 5%;display: inline-block;'>TX</div>";
+	tmpForm += "          <div id='userID' class='' style='width: 52%;display: inline-block;'>"+hash+"</div>";
+	tmpForm += "          <div id='userID' cclass='' style='width: 40%;display: inline-block; text-align: right;'>"+ regDate+"</div>";
+	tmpForm += "        </div>  ";
+
+	tmpForm += "        <div id='' class=''>";
+	tmpForm += "          <div id='fromAddr' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>F : OMC-"+obj.result.from+"</div> ";
+	tmpForm += "          <div id='toAddr' class='' style='width: 38%;display: inline-block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;'>T :  OMC-"+obj.result.to+"</div>";
+	tmpForm += "          <div id='' class='' style='width: 5%;display: inline-block;'> </div>";
+	tmpForm += "          <div id='' class='' style='width: 15%;display: inline-block; text-align:right;'>"+value+" OMC</div>";
+	tmpForm += "    </div>  ";  
+	tmpForm += "</div> ";
+	*/
+
+	tmpForm +="<div id='' class='cell datafield' style='width:90%; margin-bottom:10px; background-color:#FFF; padding:8px;' >";
+	tmpForm +="	<div id='' class='cell datafield'  >"+ regDate+"</div>"; 
+				//tmpForm +="	<div id='' class='cell datafield'  >"+hash+"</div>";
+				tmpForm +="	<div id='' class='cell datafield'  >From : OMC-"+obj.result.from+"</div>";
+				//tmpForm +="	<div id='' class='cell datafield'  >T :  OMC-"+obj.result.to+"</div>";
+				tmpForm +="	<div id='' class='cell datafield'  >"+value+" OMC</div>";
+				tmpForm +="</div>";
+
+
+				return  tmpForm;
+
+			}
+
+			function getTransactionList(divID,BlockNumber)
+			{   
+				let retHashData =""; 
+
+				for(var i= BlockNumber; i > parseInt(BlockNumber - 10);i--)
+				{   
+					retHashData = eth_getBlockByNumber(i);
+
+				}//for
+
+
+				$("#"+divID).append(retHashData)
+			}//getTransactionList
+
+
+
+
+			function addCommas(x) {
+				x = x?x:0;
+				return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+			}
+
+		</script>
+
+	</head>
+	<body>
+		<div id="menu_left" class="menu_left" style="width: 400px; height: 100%; left: -400px; top: 0px; background-color: #eaeaea; border-right: 1px solid #000; z-index: 99; position: absolute; "> </div>
+
+		<div id="top" class="header_wrap" style=" width: 100%; height: auto;">  </div> 
+ 
+		<div id="" class="" style="width: 90%; height:80%;  margin-top: 20px; margin:0 auto;  " > 
+			<div id="transaction_list" class="cell"  style="width: 100%; height: 100%; margin-top: 40px; overflow-y:scroll;" > &nbsp;</div> 
+		</div> 
+
+
+	</body>
+</html>
+

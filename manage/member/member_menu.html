@@ -1,0 +1,25 @@
+<duv id="side_menu"> 
+	<div id="l" class="menu_left  " > 회원목록 </div>
+	<div id="w"  class="menu_left " > 지갑목록 </div>
+	<div id="r"  class="menu_left " > 회원등록 </div>
+	
+</duv>
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{ 
+ 
+ 		$("#side_menu").on("click", ".menu_left",  function ()
+		{
+
+			let tmpSideMenu="";
+			let tmpURL="/manage/member/member_main.html?state=";
+			let thisID = $(this).attr('id');
+
+			$("#menu_title").html($("#"+thisID).html());
+			$(location).attr('href', tmpURL+thisID);
+
+			
+		}); 
+	});//doc  
+</script>

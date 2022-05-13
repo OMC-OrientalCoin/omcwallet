@@ -1,0 +1,43 @@
+<script src="/m_cn/js/gnb.js"></script>
+
+<div id="gnb" class="gnb-inner">
+	<div class="gnb-head">
+		<div class="gnb-head__logchk">
+			<button type="button" id="btn_logout" class="gnb-log">
+				<span class="gnb-log__txt">登出</span>
+			</button>
+		</div>
+		<div class="gnb-head__info">
+			<div class="gnb-head__info-name">
+				<strong id="userName" class="gnb-head__info-name2"><?=$_POST['USERID'];?></strong>先生
+			</div>
+			<a href="#" id="btn_myPage" class="gnb-head__info-link">會員信息管理</a>
+		</div>
+		<div class="gnb-head__quick">
+			<a href="#" id="btn_myWallet" class="gnb-head__quick-btn wallet">我的錢包</a>
+			<a href="#" id="btn_myTrans"  class="gnb-head__quick-btn history">交易記錄</a>
+		</div>
+	</div>
+
+	<div class="gnb-menu">
+		<ul class="gnb-menu__group">
+			<li class="gnb-menu__item"><a href="#" id="btn_mkw" class="gnb-menu__btn">錢包製作</a></li>
+			<li class="gnb-menu__item"><a href="#" id="btn_send" class="gnb-menu__btn">硬幣轉移</a></li>
+		<!-- 	<li class="gnb-menu__item"><a href="#" id="btn_recv" class="gnb-menu__btn">코인수신</a></li> -->
+			<li class="gnb-menu__item"><a href="#" id="btn_trans" class="gnb-menu__btn">交易</a></li>
+			<li class="gnb-menu__item"><a href="http://orientalcoin.org/" class="gnb-menu__btn" style="margin-top: 12px; border-top: 1px solid #DADADA;">orientalcoin</a></li>  
+			<li class="gnb-menu__item"><a href="http://omcexplorer.net/omcexplorer/blockchain.asp" class="gnb-menu__btn">EXPLORE</a></li>    
+			<li class="gnb-menu__item"><a href="http://api.ckmmining.com/ "    class="gnb-menu__btn">COMMUNITY</a></li>    
+		</ul>
+	</div>
+
+	<!-- <div class="gnb-bot" style="margin-top: 12px; border-top: 1px solid #DADADA;">
+		<ul class="gnb-bot__group">
+			<li class="gnb-bot__item"><a href="#" id="btn_law" class="gnb-menu__btn">약관 및 정책</a></li>
+			<li class="gnb-bot__item"><a href="#" id="btn_notice" class="gnb-menu__btn">공지사항</a></li>
+		</ul>
+	</div> -->
+	<button type="button" class="gnb-close">
+		<span class="blind">關閉</span>
+	</button>
+</div>

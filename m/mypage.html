@@ -1,0 +1,126 @@
+<?php
+@session_start(); 
+define("USERID",  	  @$_SESSION['userID']);
+define("USERWALLET",  @$_SESSION['userWallet']);
+define("USERNAME",   @$_SESSION['userName']);
+define("USEREMAIL",  @$_SESSION['userEmail']); 
+?>
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 user-scalable=yes, width=device-width">
+	<link rel="stylesheet" href="../css/common.css">
+	<link rel="stylesheet" href="../css/layout.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<script src="../js/jquery-3.3.1.min.js"></script>
+	<script src="../js/script.js"></script>
+	<title>Document</title>
+	<script type="text/javascript">
+		$(function()
+		{  
+
+			$("#gnb").load("gnb.html",{ USERID:"<?=USERID;?>" });   
+			$("#footer").load("foot_menu.html");   
+
+			let USERID = "<?=USERID;?>";
+			let MyWalletAddress = "<?=USERWALLET;?>"; 
+ 
+ 
+
+			//$('#userID').html(USERID); 
+			//$('#MyWalletAddress').html(MyWalletAddress); 
+			getMyWalletAddress("MyWalletAddress",USERID ); 
+			getBalance("getbalance",MyWalletAddress );
+
+
+		});
+
+		function getMyWalletAddress(divID,userID )
+	{  
+		var jURL   = "/m/module/get_MyWalletAddress.php";
+		var params = { userID:userID};   
+
+		var returnValue = $.ajax({
+			type: "POST",
+			url: jURL,
+			data: params,
+			async: false
+		}).responseText;
+
+		console.log("getMyWalletAddress ", returnValue)
+		var obj = $.parseJSON(returnValue);  
+ 
+		var tmpList = "";
+
+		$("#"+divID).html("")
+  
+		for(var i=0;i<obj.length;i++)
+		{  
+			tmpList += "<div class=''>" + obj[i].walletAddress   +"</div>"; 
+		}
+
+		$("#"+divID).html(tmpList);
+  
+	}
+	</script>
+</head>
+<body>
+	<div id="wrap" class="wrap"> 
+		<header id="header" class="header-sub">
+			<h1 class="header-sub__tit">마이페이지</h1>
+			<button type="button" class="btn-all-menu">
+				<span class="blind">전체메뉴열기</span>
+			</button>
+			<button type="button" class="btn-notice">
+				<span class="blind">알림</span>
+				<span class="btn-notice__count">9</span>
+			</button>
+			<div id="gnb" class="gnb"> </div>
+		</header>
+
+		<div id="container" class="container container-sub">
+			<div class="inp-wrap">
+					<input type="text" id="userID"  name="userID"  class="inp-txt full" placeholder="아이디  (5자이상)">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="password" id="userPassword" name="userPassword"  class="inp-txt full" placeholder="비밀번호">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="password" id="passwd_comp" name="passwd_comp"  class="inp-txt full" placeholder="비밀번호확인">
+				</div>
+
+
+				<div class="inp-wrap">
+					<input type="text" id="userName"  name="userName"  class="inp-txt full" placeholder="성명">
+				</div>
+				
+				<div class="inp-wrap">
+					<input type="text" id="userPhone"  name="userPhone"  class="inp-txt full" placeholder="전화번호">
+				</div>
+
+				<div class="inp-wrap">
+					<input type="text" id="userEMAIL"  name="userEMAIL"  class="inp-txt full" placeholder="E-MAIL">
+				</div>
+
+
+				<div class="inp-wrap">
+					<select id="userNation" name="userNation" class="inp-txt full" >
+						<option  >::: NATION 선택 :::</option>
+						<option value="kr">한국</option>
+						<option value="Cn">중국</option>
+						<option value="jp">일본</option>
+						<option value="vn">베트남</option>
+						<option value="pp">필리핀</option>
+					</select>
+
+				</div> 
+		</div> 
+
+		<footer id="footer" class="footer"></footer>
+	</div>
+</body>
+</html>
